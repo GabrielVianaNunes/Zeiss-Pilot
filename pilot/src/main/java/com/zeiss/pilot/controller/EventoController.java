@@ -3,44 +3,62 @@ package com.zeiss.pilot.controller;
 import com.zeiss.pilot.dto.EventoDTO;
 import com.zeiss.pilot.service.EventoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller // Alterado de @RestController para @Controller para suportar Thymeleaf
 @RequestMapping("/eventos")
 public class EventoController {
 
     @Autowired
     private EventoService eventoService;
 
+    // 🟢 Rota para exibir a página de eventos (Thymeleaf)
     @GetMapping
-    public ResponseEntity<List<EventoDTO>> getAllEventos() {
+    public String listarEventos(Model model) {
         List<EventoDTO> eventos = eventoService.getAllEventos();
-        return ResponseEntity.ok(eventos);
+        model.addAttribute("eventos", eventos); // Adiciona eventos à página
+        return "eventos"; // Retorna a página eventos.html
     }
 
-    @GetMapping("/{id}")
+    // 🟢 API REST: Retorna a lista de eventos em formato JSON
+    @GetMapping("/api")
+    @ResponseBody
+    public List<EventoDTO> getAllEventos() {
+        return eventoService.getAllEventos();
+    }
+
+    // 🟢 API REST: Busca evento por ID (JSON)
+    @GetMapping("/api/{id}")
+    @ResponseBody
     public ResponseEntity<EventoDTO> getEventoById(@PathVariable Long id) {
         EventoDTO eventoDTO = eventoService.getEventoById(id);
         return ResponseEntity.ok(eventoDTO);
     }
 
-    @PostMapping
+    // 🟢 API REST: Criar evento (JSON)
+    @PostMapping("/api")
+    @ResponseBody
     public ResponseEntity<EventoDTO> createEvento(@RequestBody EventoDTO eventoDTO) {
         EventoDTO createdEvento = eventoService.createEvento(eventoDTO);
-        return new ResponseEntity<>(createdEvento, HttpStatus.CREATED);
+        return ResponseEntity.ok(createdEvento);
     }
 
-    @PutMapping("/{id}")
+    // 🟢 API REST: Atualizar evento (JSON)
+    @PutMapping("/api/{id}")
+    @ResponseBody
     public ResponseEntity<EventoDTO> updateEvento(@PathVariable Long id, @RequestBody EventoDTO eventoDTO) {
         EventoDTO updatedEvento = eventoService.updateEvento(id, eventoDTO);
         return ResponseEntity.ok(updatedEvento);
     }
 
-    @DeleteMapping("/{id}")
+    // 🟢 API REST: Deletar evento
+    @DeleteMapping("/api/{id}")
+    @ResponseBody
     public ResponseEntity<Void> deleteEvento(@PathVariable Long id) {
         eventoService.deleteEvento(id);
         return ResponseEntity.noContent().build();

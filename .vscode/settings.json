@@ -10,5 +10,6 @@
             "username": "postgres",
             "connectionTimeout": 30
         }
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
