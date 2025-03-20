@@ -1,6 +1,7 @@
 package com.zeiss.pilot.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,10 +25,13 @@ public class Servico {
     private String solicitacao;
 
     @Column(nullable = false)
+    private LocalDate dataCriacao;  // Adicionado corretamente
+
+    @Column(nullable = false)
     private int quantidade;
 
     @Column(nullable = false)
-    private String status; // Sem ENUM, pois é String com validação no DTO
+    private String status;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal valor;
@@ -46,6 +50,9 @@ public class Servico {
 
     public String getSolicitacao() { return solicitacao; }
     public void setSolicitacao(String solicitacao) { this.solicitacao = solicitacao; }
+
+    public LocalDate getDataCriacao() { return dataCriacao; }
+    public void setDataCriacao(LocalDate dataCriacao) { this.dataCriacao = dataCriacao; }
 
     public int getQuantidade() { return quantidade; }
     public void setQuantidade(int quantidade) { this.quantidade = quantidade; }

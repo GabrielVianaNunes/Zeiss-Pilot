@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.zeiss.pilot.dto.RelatorioMensalDTO;
 import com.zeiss.pilot.dto.ServicoDTO;
 import com.zeiss.pilot.service.ServicoService;
 
@@ -30,7 +31,7 @@ public class ServicoController {
     public String mostrarPaginaServicos(Model model) {
         List<ServicoDTO> servicos = servicoService.listarTodos();
         model.addAttribute("servicos", servicos);
-        return "servicos"; // Nome do arquivo HTML (sem .html)
+        return "servicos";
     }
 
     // 🔹 API REST: Listar serviços (JSON)
@@ -71,4 +72,18 @@ public class ServicoController {
         servicoService.excluirServico(id);
         return ResponseEntity.noContent().build();
     }
+
+    // ✅ Retorna a página HTML corretamente
+    @GetMapping("/relatorio-servicos")
+    public String obterRelatorioMensal(Model model) {
+        return "dashboardServicos"; // Nome da página HTML
+    }
+
+    // ✅ Novo endpoint para JSON
+    @GetMapping("/relatorio-servicos/api")
+    @ResponseBody
+    public ResponseEntity<List<RelatorioMensalDTO>> obterRelatorioMensalDados() {
+        return ResponseEntity.ok(servicoService.obterRelatorioMensal());
+    }
+
 }

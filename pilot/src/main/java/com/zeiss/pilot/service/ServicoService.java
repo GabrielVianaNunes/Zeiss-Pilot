@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zeiss.pilot.dto.RelatorioMensalDTO;
 import com.zeiss.pilot.dto.ServicoDTO;
 import com.zeiss.pilot.entity.Servico;
 import com.zeiss.pilot.repository.ServicoRepository;
@@ -21,7 +22,8 @@ public class ServicoService {
         return servicoRepository.findAll().stream()
                 .map(servico -> new ServicoDTO(
                         servico.getId(), servico.getCliente(), servico.getSolicitacao(),
-                        servico.getQuantidade(), servico.getStatus(), servico.getValor(), servico.getObservacao()))
+                        servico.getDataCriacao(), servico.getQuantidade(), servico.getStatus(),
+                        servico.getValor(), servico.getObservacao()))
                 .collect(Collectors.toList());
     }
 
@@ -29,7 +31,8 @@ public class ServicoService {
         Optional<Servico> servico = servicoRepository.findById(id);
         return servico.map(s -> new ServicoDTO(
                 s.getId(), s.getCliente(), s.getSolicitacao(),
-                s.getQuantidade(), s.getStatus(), s.getValor(), s.getObservacao()))
+                s.getDataCriacao(), s.getQuantidade(), s.getStatus(),
+                s.getValor(), s.getObservacao()))
                 .orElse(null);
     }
 
@@ -37,6 +40,7 @@ public class ServicoService {
         Servico servico = new Servico();
         servico.setCliente(servicoDTO.getCliente());
         servico.setSolicitacao(servicoDTO.getSolicitacao());
+        servico.setDataCriacao(servicoDTO.getDataCriacao()); // ✅ Agora inclui a data manualmente
         servico.setQuantidade(servicoDTO.getQuantidade());
         servico.setStatus(servicoDTO.getStatus());
         servico.setValor(servicoDTO.getValor());
@@ -44,7 +48,8 @@ public class ServicoService {
 
         Servico salvo = servicoRepository.save(servico);
         return new ServicoDTO(salvo.getId(), salvo.getCliente(), salvo.getSolicitacao(),
-                salvo.getQuantidade(), salvo.getStatus(), salvo.getValor(), salvo.getObservacao());
+                salvo.getDataCriacao(), salvo.getQuantidade(), salvo.getStatus(),
+                salvo.getValor(), salvo.getObservacao());
     }
 
     public ServicoDTO atualizarServico(Long id, ServicoDTO servicoDTO) {
@@ -53,15 +58,21 @@ public class ServicoService {
             Servico servico = optionalServico.get();
             servico.setCliente(servicoDTO.getCliente());
             servico.setSolicitacao(servicoDTO.getSolicitacao());
+            servico.setDataCriacao(servicoDTO.getDataCriacao()); // ✅ Mantém a data correta
             servico.setQuantidade(servicoDTO.getQuantidade());
             servico.setStatus(servicoDTO.getStatus());
             servico.setValor(servicoDTO.getValor());
             servico.setObservacao(servicoDTO.getObservacao());
             servicoRepository.save(servico);
             return new ServicoDTO(servico.getId(), servico.getCliente(), servico.getSolicitacao(),
-                    servico.getQuantidade(), servico.getStatus(), servico.getValor(), servico.getObservacao());
+                    servico.getDataCriacao(), servico.getQuantidade(), servico.getStatus(),
+                    servico.getValor(), servico.getObservacao());
         }
         return null;
+    }
+
+    public List<RelatorioMensalDTO> obterRelatorioMensal() {
+        return servicoRepository.calcularArrecadacaoMensal();
     }
 
     public void excluirServico(Long id) {
