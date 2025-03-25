@@ -43,7 +43,7 @@ body {
     width: 150px;
     height: auto;
     position: absolute;
-    top: 30px;
+    top: 40px;
     right: 10px;
 }
 
@@ -336,4 +336,22 @@ textarea {
     .modal-content {
         width: 95%;
     }
+}
+
+.btn-dashboard {
+    background-color: #007bff;
+    color: white;
+    border: none;   
+    padding: 9px 11px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+    margin-bottom: 7px;
+    display: inline-block;
+}
+
+.btn-dashboard:hover {
+    background-color: #0056b3;
 }
