@@ -11,10 +11,55 @@ document.addEventListener("DOMContentLoaded", () => {
     let paginaAtual = 1;
     let visitas = [];
 
+    // 🔹 Define a data mínima como hoje nos campos de data
+    function configurarMinimaDataHoje() {
+        const hoje = new Date().toISOString().split("T")[0];
+        document.getElementById("dataSolicitada").setAttribute("min", hoje);
+        document.getElementById("dataAgendada").setAttribute("min", hoje);
+    }
+
+    // 🔹 Validações de campos de entrada
+    function configurarValidacoesCampos() {
+        const campoResponsavel = document.getElementById("responsavel");
+        const campoQuantidade = document.getElementById("quantidade");
+        const campoTelefones = document.getElementById("telefones");
+
+        // 🔸 Somente letras com acento e espaços no campo "Responsável"
+        campoResponsavel.addEventListener("input", () => {
+            campoResponsavel.value = campoResponsavel.value.replace(/[^A-Za-zÀ-ÿ\s]/g, "");
+        });
+
+        // 🔸 Somente números inteiros no campo "Quantidade de Visitantes"
+        campoQuantidade.addEventListener("input", () => {
+            campoQuantidade.value = campoQuantidade.value.replace(/[^\d]/g, "");
+        });
+
+        // 🔸 Corrige problema de backspace no campo de telefone
+        let ultimaTeclaTelefone = "";
+
+        campoTelefones.addEventListener("keydown", (e) => {
+            ultimaTeclaTelefone = e.key;
+        });
+
+        campoTelefones.addEventListener("input", () => {
+            if (ultimaTeclaTelefone === "Backspace") return;
+
+            let valor = campoTelefones.value.replace(/\D/g, "").slice(0, 11);
+            if (valor.length <= 10) {
+                valor = valor.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+            } else {
+                valor = valor.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3");
+            }
+            campoTelefones.value = valor.trim();
+        });
+    }
+
     // Abrir modal
     btnNovaVisita.onclick = () => {
         modal.style.display = "flex";
         visitaForm.reset();
+        configurarMinimaDataHoje();
+        configurarValidacoesCampos(); // ✅ Aplica validações sempre que abrir
     };
 
     // Fechar modal
@@ -31,14 +76,13 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(response => response.json())
             .then(data => {
                 visitas = data;
-                paginaAtual = 1; // sempre começa da página 1
+                paginaAtual = 1;
                 renderizarVisitas();
                 renderizarPaginacao();
             })
             .catch(error => console.error("Erro ao carregar visitas:", error));
     }
 
-    // Exibir visitas por página
     function renderizarVisitas() {
         visitasContainer.innerHTML = "";
         const inicio = (paginaAtual - 1) * visitasPorPagina;
@@ -61,7 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Criar botões de paginação
     function renderizarPaginacao() {
         let paginacao = document.querySelector(".paginacao");
         if (!paginacao) {
@@ -104,7 +147,6 @@ document.addEventListener("DOMContentLoaded", () => {
         paginacao.appendChild(btnProximo);
     }
 
-    // Filtrar visitas
     campoPesquisa.addEventListener("input", () => {
         const termo = campoPesquisa.value.toLowerCase();
         const visitasFiltradas = visitas.filter(visita =>
@@ -118,15 +160,14 @@ document.addEventListener("DOMContentLoaded", () => {
         renderizarPaginacao();
     });
 
-    // Função para editar visita
     window.editarVisita = function(id) {
         const visita = visitas.find(v => v.id === id);
         document.getElementById("responsavel").value = visita.responsavel;
-        // Adicione mais campos conforme necessário
         modal.style.display = "flex";
+        configurarMinimaDataHoje();
+        configurarValidacoesCampos(); // ✅ Aplica também ao editar
     };
 
-    // Função para excluir visita
     window.deletarVisita = function(id) {
         if (confirm("Tem certeza que deseja excluir esta visita?")) {
             fetch(`/visitas-tecnicas/api/${id}`, { method: "DELETE" })
@@ -135,6 +176,5 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // 🔹 Carregar automaticamente ao abrir a página
     carregarVisitas();
 });
