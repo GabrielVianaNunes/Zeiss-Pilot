@@ -3,6 +3,15 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(response => response.json())
       .then(data => preencherTabela(data))
       .catch(erro => console.error("Erro ao buscar projetos:", erro));
+  
+    // Ativar formatação monetária ao digitar
+    document.getElementById("custoAnualPrevisto").addEventListener("input", function () {
+      formatarParaReal(this);
+    });
+  
+    document.getElementById("retornoPrevisto").addEventListener("input", function () {
+      formatarParaReal(this);
+    });
   });
   
   function preencherTabela(projetos) {
@@ -19,59 +28,78 @@ document.addEventListener("DOMContentLoaded", function () {
         <td>${p.status}</td>
         <td>${p.previsaoInicio || "-"}</td>
         <td>${p.previsaoTermino || "-"}</td>
-        <td>${p.dataRealFinalizacao || "-"}</td> <!-- NOVO CAMPO -->
+        <td>${p.dataRealFinalizacao || "-"}</td>
       `;
   
       tbody.appendChild(tr);
     });
   }
   
-// Abrir/fechar modal
-const modal = document.getElementById("modalProjeto");
-const btnAbrirModal = document.getElementById("btnAbrirModal");
-const spanFechar = document.querySelector(".fechar");
-
-btnAbrirModal.onclick = () => {
-  document.getElementById("formProjeto").reset();
-  document.getElementById("tituloModal").textContent = "Cadastrar Projeto";
-  modal.style.display = "block";
-};
-
-spanFechar.onclick = () => modal.style.display = "none";
-window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
-
-// Enviar formulário
-document.getElementById("formProjeto").addEventListener("submit", function(e) {
-  e.preventDefault();
-
-  const projeto = {
-    nomeProjeto: document.getElementById("nomeProjeto").value,
-    objetivo: document.getElementById("objetivo").value,
-    atividades: document.getElementById("atividades").value,
-    responsavel: { id: parseInt(document.getElementById("responsavelId").value) || null },
-    prioridade: document.getElementById("prioridade").value,
-    custoAnualPrevisto: parseFloat(document.getElementById("custoAnualPrevisto").value),
-    retornoPrevisto: parseFloat(document.getElementById("retornoPrevisto").value),
-    status: document.getElementById("status").value,
-    observacao: document.getElementById("observacao").value,
-    previsaoInicio: document.getElementById("previsaoInicio").value,
-    previsaoTermino: document.getElementById("previsaoTermino").value,
-    dataRealFinalizacao: document.getElementById("dataRealFinalizacao").value
+  // Abrir/fechar modal
+  const modal = document.getElementById("modalProjeto");
+  const btnAbrirModal = document.getElementById("btnAbrirModal");
+  const spanFechar = document.querySelector(".fechar");
+  
+  btnAbrirModal.onclick = () => {
+    document.getElementById("formProjeto").reset();
+    document.getElementById("tituloModal").textContent = "Cadastrar Projeto";
+    modal.style.display = "block";
   };
-
-  fetch("/projetos/api", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(projeto)
-  })
-  .then(res => {
-    if (res.ok) {
-      alert("Projeto cadastrado com sucesso!");
-      modal.style.display = "none";
-      return fetch("/projetos/api").then(r => r.json()).then(preencherTabela);
-    } else {
-      alert("Erro ao salvar projeto.");
-    }
+  
+  spanFechar.onclick = () => modal.style.display = "none";
+  window.onclick = (event) => {
+    if (event.target == modal) modal.style.display = "none";
+  };
+  
+  // Enviar formulário
+  document.getElementById("formProjeto").addEventListener("submit", function (e) {
+    e.preventDefault();
+  
+    const custo = parseFloat(
+      document.getElementById("custoAnualPrevisto").value.replace("R$ ", "").replace(/\./g, "").replace(",", ".")
+    );
+  
+    const retorno = parseFloat(
+      document.getElementById("retornoPrevisto").value.replace("R$ ", "").replace(/\./g, "").replace(",", ".")
+    );
+  
+    const projeto = {
+      nomeProjeto: document.getElementById("nomeProjeto").value,
+      objetivo: document.getElementById("objetivo").value,
+      atividades: document.getElementById("atividades").value,
+      responsavel: { id: parseInt(document.getElementById("responsavelId").value) || null },
+      prioridade: document.getElementById("prioridade").value,
+      custoAnualPrevisto: custo,
+      retornoPrevisto: retorno,
+      status: document.getElementById("status").value,
+      observacao: document.getElementById("observacao").value,
+      previsaoInicio: document.getElementById("previsaoInicio").value,
+      previsaoTermino: document.getElementById("previsaoTermino").value,
+      dataRealFinalizacao: document.getElementById("dataRealFinalizacao").value
+    };
+  
+    fetch("/projetos/api", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(projeto)
+    })
+      .then(res => {
+        if (res.ok) {
+          alert("Projeto cadastrado com sucesso!");
+          modal.style.display = "none";
+          return fetch("/projetos/api").then(r => r.json()).then(preencherTabela);
+        } else {
+          alert("Erro ao salvar projeto.");
+        }
+      });
   });
   
-});
+  // Função de formatação para R$ em tempo real
+  function formatarParaReal(input) {
+    let valor = input.value.replace(/\D/g, ""); // Remove tudo que não for dígito
+    valor = (parseInt(valor, 10) / 100).toFixed(2) + "";
+    valor = valor.replace(".", ",");
+    valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+    input.value = "R$ " + valor;
+  }
+  

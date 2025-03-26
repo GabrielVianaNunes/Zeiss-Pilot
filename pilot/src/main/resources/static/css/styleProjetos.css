@@ -96,7 +96,10 @@
   }
 
   .container {
-    margin-top: 120px;
+    margin-top: 160px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 200px;
     padding: 20px;
     max-width: 1100px;
     margin-left: auto;
@@ -194,7 +197,11 @@ table#tabelaProjetos {
     border-radius: 10px;
     width: 90%;
     max-width: 600px;
+    /* 🔽 Ajuste importante */
+    max-height: 80vh;
+    overflow-y: auto;
   }
+  
   
   .fechar {
     float: right;
@@ -233,7 +240,7 @@ table#tabelaProjetos {
   
 .btn-container {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     margin-bottom: 20px;
   }
   
