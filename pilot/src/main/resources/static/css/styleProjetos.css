@@ -216,12 +216,26 @@ table#tabelaProjetos {
     font-weight: bold;
   }
   
-  form input, form textarea, form select {
+  form input, form select {
     width: 100%;
     padding: 8px;
     margin-top: 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
+  }
+
+  form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    resize: none; /* ❌ impede o redimensionamento manual */
+    height: 100px; /* ✅ altura inicial */
+    max-height: 160px; /* ✅ limite superior */
+    overflow-y: auto; /* ✅ ativa barra de rolagem interna se necessário */
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
   }
   
   form button[type="submit"] {

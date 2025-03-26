@@ -1,31 +1,21 @@
 package com.zeiss.pilot.dto;
 
 public class UsuarioDTO {
-
     private Long id;
     private String nome;
-
-    public UsuarioDTO() {}
-
-    public UsuarioDTO(Long id, String nome) {
-        this.id = id;
-        this.nome = nome;
-    }
+    private String email;
+    private String role;
 
     // Getters e Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public String getNome() {
-        return nome;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }
