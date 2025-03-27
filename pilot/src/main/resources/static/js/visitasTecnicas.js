@@ -30,8 +30,24 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // 🔸 Somente números inteiros no campo "Quantidade de Visitantes"
-        campoQuantidade.addEventListener("input", () => {
-            campoQuantidade.value = campoQuantidade.value.replace(/[^\d]/g, "");
+        campoQuantidade.addEventListener("keydown", (e) => {
+            const permitido =
+                e.key >= '0' && e.key <= '9' ||
+                e.key === 'Backspace' ||
+                e.key === 'Delete' ||
+                e.key === 'ArrowLeft' ||
+                e.key === 'ArrowRight' ||
+                e.key === 'Tab';
+            if (!permitido) {
+                e.preventDefault();
+            }
+        });
+
+        campoQuantidade.addEventListener("paste", (e) => {
+            const texto = (e.clipboardData || window.clipboardData).getData('text');
+            if (!/^\d+$/.test(texto)) {
+                e.preventDefault();
+            }
         });
 
         // 🔸 Corrige problema de backspace no campo de telefone
