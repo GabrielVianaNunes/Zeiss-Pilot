@@ -52,4 +52,19 @@ public class UsuarioService {
         dto.setRole(usuario.getRole());
         return dto;
     }
+
+    public List<UsuarioDTO> listarUsuariosPorRole(String role) {
+        return usuarioRepository.findAll()
+                .stream()
+                .filter(u -> u.getRole() != null && u.getRole().equalsIgnoreCase(role))
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public UsuarioDTO buscarPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .map(this::toDTO)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    }    
+    
 }

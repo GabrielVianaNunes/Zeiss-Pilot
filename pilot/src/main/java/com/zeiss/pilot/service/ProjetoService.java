@@ -23,9 +23,15 @@ public class ProjetoService {
     }
 
     public ProjetoDTO criarProjeto(Projeto projeto) {
+        if (projeto.getResponsavel() != null && projeto.getResponsavel().getId() != null) {
+            usuarioRepository.findById(projeto.getResponsavel().getId()).ifPresent(projeto::setResponsavel);
+        } else {
+            projeto.setResponsavel(null); 
+        }
+    
         Projeto salvo = projetoRepository.save(projeto);
         return toDTO(salvo);
-    }
+    }    
 
     public List<ProjetoDTO> listarProjetos() {
         return projetoRepository.findAll()
@@ -51,7 +57,14 @@ public class ProjetoService {
             projeto.setNomeProjeto(novo.getNomeProjeto());
             projeto.setObjetivo(novo.getObjetivo());
             projeto.setAtividades(novo.getAtividades());
-            projeto.setResponsavel(novo.getResponsavel());
+    
+            if (novo.getResponsavel() != null && novo.getResponsavel().getId() != null) {
+                usuarioRepository.findById(novo.getResponsavel().getId())
+                    .ifPresent(projeto::setResponsavel);
+            } else {
+                projeto.setResponsavel(null);
+            }
+    
             projeto.setPrioridade(novo.getPrioridade());
             projeto.setCustoAnualPrevisto(novo.getCustoAnualPrevisto());
             projeto.setRetornoPrevisto(novo.getRetornoPrevisto());
@@ -62,7 +75,7 @@ public class ProjetoService {
             projeto.setDataRealFinalizacao(novo.getDataRealFinalizacao());
             return toDTO(projetoRepository.save(projeto));
         }).orElse(null);
-    }
+    }    
 
     private ProjetoDTO toDTO(Projeto projeto) {
         ProjetoDTO dto = new ProjetoDTO();

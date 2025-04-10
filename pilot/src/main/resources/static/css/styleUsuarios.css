@@ -1,150 +1,333 @@
-/* Reset e base */
+/* Reset básico */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-  
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Cabeçalho */
+.cabecalho {
+  background-color: #fff;
+  width: 100%;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.logo {
+  width: 170px;
+}
+
+/* Rodapé */
+.rodape {
+  background: linear-gradient(to bottom, #3c9aff, #0056b3);
+  color: #fdfdfd;
+  padding: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  width: 100%;
+  border-top: 1px solid #ddd;
+  position: relative; /* 🔹 Permite que o rodapé seja empurrado pelo conteúdo */
+  bottom: 0;
+  left: 0;
+}
+
+.rodape h3 {
+  margin-bottom: 10px;
+}
+
+.logo-pequena {
+  width: 100px;
+  height: auto;
+  margin-top: 10px;
+}
+
+/* Ajuste das Imagens no Header */
+#imgTopo {
+  width: 200px;
+  height: auto;
+}
+
+#imgSenai {
+  width: 150px;
+  height: auto;
+  position: absolute; 
+  top: 40px;
+  right: 10px;
+}
+
+.container-geral {
+  flex: 1;
+}
+
+/* Container principal */
+.container {
+  flex: 1;
+  max-width: 70%;
+  margin: 100px auto 20px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-top: 160px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 200px;
+}
+
+.container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#btnAbrirModal {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+#btnAbrirModal:hover {
+  background-color: #0056b3;
+}
+
+/* Estilizando a Tabela */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background-color: #007bff;
+  color: white;
+}
+
+td {
+  background-color: #f9f9f9;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: white;
+  width: 70%;
+  max-width: 450px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  margin: 10% auto;
+  position: relative;
+}
+
+.fechar {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.fechar:hover,
+.fechar:focus {
+  color: black;
+}
+
+form label {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+form input,
+form select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+form button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 15px;
+  width: 100%;
+}
+
+form button[type="submit"]:hover {
+  background-color: #005eff;
+}
+
+/* Responsividade */
+@media screen and (max-width: 768px) {
   .container {
-    margin-top: 120px;
-    padding: 20px;
-    max-width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 70%;
+      padding: 10px;
   }
-  
-  .container h1 {
-    text-align: center;
-    margin-bottom: 20px;
+
+  table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
   }
-  
-  #btnAbrirModal {
-    display: block;
-    margin: 0 auto 20px auto;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  #btnAbrirModal:hover {
-    background-color: #0056b3;
-  }
-  
-  #tabelaUsuarios {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-  }
-  
-  #tabelaUsuarios th, #tabelaUsuarios td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
-  }
-  
-  #tabelaUsuarios th {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  #tabelaUsuarios tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-  
-  /* Modal */
-  .modal {
-    display: none; /* escondido por padrão */
-    position: fixed;
-    z-index: 1001;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-  
+
   .modal-content {
-    background-color: #fff;
-    margin: 10% auto;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
-    position: relative;
+      width: 95%;
   }
-  
-  .fechar {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    cursor: pointer;
-  }
-  
-  .fechar:hover,
-  .fechar:focus {
-    color: black;
-  }
-  
-  form label {
-    display: block;
-    margin-top: 10px;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  form input,
-  form select {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  form button[type="submit"] {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  form button[type="submit"]:hover {
-    background-color: #218838;
-  }
-  
-  @media screen and (max-width: 480px) {
-    .modal-content {
-      width: 90%;
-    }
-  
-    .container {
-      max-width: 95%;
-    }
-  
-    #tabelaUsuarios th, #tabelaUsuarios td {
+
+  th, td {
       font-size: 14px;
       padding: 8px;
-    }
   }
+
+  #imgTopo,
+  #imgSenai {
+    width: 100px;
+  }
+}
+
+/* Estilo dos botões de ação */
+.btn {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin: 0 3px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-edit {
+  background-color: #ffc107;
+  color: #fff;
+}
+
+.btn-edit:hover {
+  background-color: #e0a800;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.btn-delete:hover {
+  background-color: #a71d2a;
+}
+
+/* 🔹 Estilo dos Filtros */
+.filtros {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.filtros label {
+  font-weight: bold;
+}
+
+.filtros select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.btn.limpar {
+  background-color: #babbbc;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.btn.limpar:hover {
+  background-color: #9b9b9b;
+}
+
+/* 🔹 Estilo da Paginação */
+.paginacao-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.paginacao-container button {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.paginacao-container button:hover {
+  background-color: #0056b3;
+}
+
+.paginacao-container button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+#paginacaoInfo {
+  font-weight: bold;
+}
