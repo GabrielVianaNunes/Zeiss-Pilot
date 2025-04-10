@@ -126,7 +126,7 @@
   }
   
   th {
-    background-color: #0056b3;
+    background-color: #007bff;
     color: white;
   }
   
@@ -149,7 +149,7 @@ table#tabelaProjetos {
   }
   
   #tabelaProjetos thead {
-    background: linear-gradient(to right, #0056b3, #3c9aff);
+    background-color: #007bff;
     color: #fff;
     font-weight: bold;
   }
@@ -179,7 +179,7 @@ table#tabelaProjetos {
   
   
   /* Modal */
-.modal {
+  .modal {
     display: none;
     position: fixed;
     z-index: 2000;
@@ -241,7 +241,7 @@ table#tabelaProjetos {
   form button[type="submit"] {
     margin-top: 20px;
     padding: 10px 20px;
-    background-color: #0056b3;
+    background-color: #007bff;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -252,7 +252,7 @@ table#tabelaProjetos {
     background-color: #003d80;
   }
   
-.btn-container {
+  .btn-container {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
@@ -260,7 +260,7 @@ table#tabelaProjetos {
   
   .btn-cadastrar {
     padding: 10px 20px;
-    background-color: #0056b3;
+    background-color: #007bff;
     color: #fff;
     border: none;
     font-size: 1rem;
@@ -275,3 +275,220 @@ table#tabelaProjetos {
     transform: scale(1.02);
   }
   
+  .filtros {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 15px 20px;
+    max-width: 1100px;
+    margin: 0 auto 30px auto; 
+    background-color: #eaf4ff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  }  
+
+  .filtros .limpar {
+    margin-left: auto;
+    padding: 8px;
+    background-color: #babbbc;
+    color: white;
+  }
+  
+  .filtros .limpar:hover {
+    background-color: #9b9b9b;
+  }  
+  
+  .filtros label {
+    font-weight: 200;
+    margin-right: 4px;
+    font-size: 15px;
+    color: #333;
+  }
+  
+  .filtros select {
+    padding: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    min-width: 170px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .filtros select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+  }  
+  
+  .paginacao-container {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .paginacao {
+    background-color: #e0e0e0;
+    border: none;
+    color: #333;
+    padding: 8px 16px;
+    margin: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .paginacao:hover:not(:disabled) {
+    background-color: #d5d5d5;
+  }
+  
+  .paginacao:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  
+  /* === Botão de Edição/Configuração de Projeto === */
+/* From Uiverse.io by vinodjangid07 */
+.setting-btn {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: #007bff;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0px 0px 0px 2px rgb(212, 209, 255);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.setting-btn:hover {
+  background-color: #2244ad;
+  transform: scale(1.05);
+}
+
+.setting-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(100, 100, 255, 0.3);
+}
+
+.bar {
+  width: 25%;
+  height: 2px;
+  background-color: rgb(229, 229, 229);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: 2px;
+}
+
+.bar::before {
+  content: "";
+  width: 2px;
+  height: 2px;
+  background-color: rgb(126, 117, 255);
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid white;
+  transition: all 0.3s;
+  box-shadow: 0px 0px 5px white;
+}
+
+.bar1::before {
+  transform: translateX(-4px);
+}
+.bar2::before {
+  transform: translateX(4px);
+}
+
+.setting-btn:hover .bar1::before {
+  transform: translateX(4px);
+}
+.setting-btn:hover .bar2::before {
+  transform: translateX(-4px);
+}
+
+.valor-pequeno {
+  font-size: 0.85rem;
+  color: #333;
+}
+
+/* Estilos exclusivos para o botão de busca animado */
+.pesquisa-container {
+  position: relative;
+  box-sizing: border-box;
+  width: fit-content;
+  margin: 0 auto 20px auto;
+}
+
+.pesquisa-box {
+  position: relative;
+  width: 230px;
+  height: 30px;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: center;
+  border-radius: 160px;
+  background-color: #e6e6e6;
+  transition: all 0.3s ease;
+}
+
+.pesquisa-checkbox {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  right: 17px;
+  top: 10px;
+  z-index: 9;
+  cursor: pointer;
+  appearance: none;
+}
+
+.pesquisa-checkbox:checked ~ .pesquisa-box {
+  width: 50px;
+}
+
+.pesquisa-checkbox:checked ~ .pesquisa-box .pesquisa-input {
+  width: 0;
+  height: 0px;
+}
+
+.pesquisa-checkbox:checked ~ .pesquisa-box .pesquisa-icon-container {
+  padding-right: 8px;
+}
+
+.pesquisa-input {
+  height: 100%;
+  width: 170px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  padding-bottom: 2px;
+  padding-left: 10px;
+  font-size: 17px;
+  color: rgb(10, 10, 10);
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.pesquisa-input::placeholder {
+  color: rgba(0, 0, 0, 0.776);
+}
+
+.pesquisa-icon-container {
+  padding-top: 5px;
+  width: fit-content;
+  transition: all 0.3s ease;
+}
+
+.pesquisa-icon {
+  fill: rgb(0, 0, 0);
+  font-size: 1.3em;
+}

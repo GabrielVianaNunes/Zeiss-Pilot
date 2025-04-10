@@ -1,61 +1,101 @@
-// Referências dos elementos
+let usuariosGlobais = [];
+let paginaAtual = 1;
+const itensPorPagina = 10;
+
 const modal = document.getElementById("modal");
 const btnAbrirModal = document.getElementById("btnAbrirModal");
 const btnFecharModal = document.getElementById("fecharModal");
 const form = document.getElementById("formUsuario");
 const tabelaBody = document.querySelector("#tabelaUsuarios tbody");
 
-// Abrir o modal
-btnAbrirModal.onclick = () => {
-  modal.style.display = "block";
+const filtroRole = document.getElementById("filtroRole");
+const btnLimparFiltros = document.getElementById("btnLimparFiltros");
+
+const btnAnterior = document.getElementById("btnAnterior");
+const btnProximo = document.getElementById("btnProximo");
+const paginacaoInfo = document.getElementById("paginacaoInfo");
+
+// Eventos
+window.onload = carregarUsuarios;
+btnAbrirModal.onclick = () => modal.style.display = "block";
+btnFecharModal.onclick = fecharModal;
+window.onclick = e => { if (e.target === modal) fecharModal(); };
+filtroRole.addEventListener("change", () => {
+  paginaAtual = 1;
+  carregarUsuarios();
+});
+btnLimparFiltros.onclick = () => {
+  filtroRole.value = "";
+  paginaAtual = 1;
+  carregarUsuarios();
 };
 
-// Fechar o modal
-btnFecharModal.onclick = () => {
-  modal.style.display = "none";
-  form.reset();
-};
-
-// Fechar ao clicar fora
-window.onclick = function(event) {
-  if (event.target === modal) {
-    modal.style.display = "none";
-    form.reset();
+btnAnterior.onclick = () => {
+  if (paginaAtual > 1) {
+    paginaAtual--;
+    renderizarTabelaPaginada(usuariosGlobais);
   }
 };
 
-// Carregar usuários ao iniciar
-window.onload = listarUsuarios;
+btnProximo.onclick = () => {
+  const total = Math.ceil(usuariosGlobais.length / itensPorPagina);
+  if (paginaAtual < total) {
+    paginaAtual++;
+    renderizarTabelaPaginada(usuariosGlobais);
+  }
+};
 
-function listarUsuarios() {
-  fetch("/api/usuarios")
+function fecharModal() {
+  modal.style.display = "none";
+  form.reset();
+}
+
+function carregarUsuarios() {
+  const role = filtroRole.value;
+  const url = role ? `/usuarios/api?role=${role}` : `/usuarios/api`;
+
+  fetch(url)
     .then(res => res.json())
     .then(data => {
-      tabelaBody.innerHTML = "";
-      data.forEach(usuario => adicionarLinha(usuario));
+      usuariosGlobais = data;
+      renderizarTabelaPaginada(data);
     })
     .catch(err => console.error("Erro ao buscar usuários:", err));
+}
+
+function renderizarTabelaPaginada(lista) {
+  tabelaBody.innerHTML = "";
+
+  const totalPaginas = Math.ceil(lista.length / itensPorPagina);
+  const inicio = (paginaAtual - 1) * itensPorPagina;
+  const fim = inicio + itensPorPagina;
+  const pagina = lista.slice(inicio, fim);
+
+  pagina.forEach(usuario => adicionarLinha(usuario));
+
+  paginacaoInfo.textContent = `Página ${paginaAtual} de ${totalPaginas}`;
+  btnAnterior.disabled = paginaAtual === 1;
+  btnProximo.disabled = paginaAtual === totalPaginas;
 }
 
 function adicionarLinha(usuario) {
   const tr = document.createElement("tr");
 
   tr.innerHTML = `
-    <td>${usuario.id}</td>
     <td>${usuario.nome}</td>
     <td>${usuario.email}</td>
     <td>${usuario.role}</td>
     <td>
-      <button onclick="editarUsuario(${usuario.id})">Editar</button>
-      <button onclick="deletarUsuario(${usuario.id})">Excluir</button>
+      <button class="btn btn-edit" onclick="editarUsuario(${usuario.id})">Editar</button>
+      <button class="btn btn-delete" onclick="deletarUsuario(${usuario.id})">Excluir</button>
     </td>
   `;
 
   tabelaBody.appendChild(tr);
 }
 
-form.onsubmit = function(event) {
-  event.preventDefault();
+form.onsubmit = function (e) {
+  e.preventDefault();
 
   const usuario = {
     nome: form.nome.value,
@@ -64,16 +104,15 @@ form.onsubmit = function(event) {
     role: form.role.value
   };
 
-  fetch("/api/usuarios", {
+  fetch("/usuarios/api", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(usuario)
   })
     .then(res => res.json())
     .then(novoUsuario => {
-      adicionarLinha(novoUsuario);
-      modal.style.display = "none";
-      form.reset();
+      carregarUsuarios();
+      fecharModal();
     })
     .catch(err => console.error("Erro ao adicionar usuário:", err));
 };
@@ -81,16 +120,15 @@ form.onsubmit = function(event) {
 function deletarUsuario(id) {
   if (!confirm("Tem certeza que deseja excluir este usuário?")) return;
 
-  fetch(`/api/usuarios/${id}`, { method: "DELETE" })
-    .then(() => listarUsuarios())
+  fetch(`/usuarios/api/${id}`, { method: "DELETE" })
+    .then(() => carregarUsuarios())
     .catch(err => console.error("Erro ao deletar:", err));
 }
 
 function editarUsuario(id) {
-  fetch(`/api/usuarios`)
+  fetch(`/usuarios/api/${id}`)
     .then(res => res.json())
-    .then(usuarios => {
-      const usuario = usuarios.find(u => u.id === id);
+    .then(usuario => {
       if (!usuario) return alert("Usuário não encontrado");
 
       form.nome.value = usuario.nome;
@@ -100,7 +138,7 @@ function editarUsuario(id) {
 
       modal.style.display = "block";
 
-      form.onsubmit = function(e) {
+      form.onsubmit = function (e) {
         e.preventDefault();
 
         const atualizado = {
@@ -110,15 +148,14 @@ function editarUsuario(id) {
           role: form.role.value
         };
 
-        fetch(`/api/usuarios/${id}`, {
+        fetch(`/usuarios/api/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(atualizado)
         })
           .then(() => {
-            listarUsuarios();
-            modal.style.display = "none";
-            form.reset();
+            carregarUsuarios();
+            fecharModal();
           })
           .catch(err => console.error("Erro ao atualizar:", err));
       };
