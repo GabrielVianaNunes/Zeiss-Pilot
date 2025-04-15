@@ -98,16 +98,9 @@
   .boas-vindas h3 {
     font-size: 1rem;
     margin-bottom: 10px;
-<<<<<<< HEAD
-    background: linear-gradient(to right, #000000, #DD0000, #FFCE00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: fadeInText 1s ease-in-out;
-  }  
-=======
+    color: rgb(28, 9, 201);
     animation: fadeInText 1s ease-in-out;
   }
->>>>>>> de64d304ad550a28021867da19ca0e6769b7cd23
   
   .boas-vindas p {
     font-size: 0.8rem;
