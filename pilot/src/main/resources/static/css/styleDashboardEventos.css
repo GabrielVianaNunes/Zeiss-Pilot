@@ -32,12 +32,6 @@ body {
 .logo {
     width: 170px;
 }
-
-.logo-pequena {
-    width: 100px;
-    height: auto;
-    margin-top: 10px;
-  }
   
   /* Ajuste das Imagens no Header */
   #imgTopo {
@@ -126,18 +120,23 @@ body {
 
 /* Rodapé */
 .rodape {
-    background: linear-gradient(to bottom, #3c9aff, #0056b3);
-    color: #fdfdfd;
-    padding: 20px;
-    text-align: center;
-    font-size: 0.9rem;
-    width: 100%;
-    border-top: 1px solid #ddd;
-    position: relative;
-    bottom: 0;
-    left: 0;
+  background: #fff;
+  color: rgb(28, 9, 201);
+  padding: 20px;
+  text-align: center;
+  font-size: 0.6rem;
+  width: 100%;
+  border-top: 1px solid #ddd;
+  animation: fadeInRodape 1.5s ease-in;
+  box-shadow: 0 2px 7px rgba(0,0,0,0.2);
 }
 
 .rodape h3 {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.logo-pequena {
+  width: 180px;
+  height: auto;
+  margin-top: 10px;
 }
