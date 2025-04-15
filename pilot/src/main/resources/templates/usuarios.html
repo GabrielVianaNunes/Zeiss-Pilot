@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Usuários</title>
+  <link rel="stylesheet" type="text/css" href="/css/styleUsuarios.css">
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header class="cabecalho">
+      <figure>
+          <img class="logo" id="imgTopo" src="/img/Logo-Zeiss-Coop-Transparent.png" alt="Logo Zeiss">
+          <img class="logo" id="imgSenai" src="/img/senai-azul.png" alt="Logo Senai Azul">
+      </figure>
+  </header>  
+
+  <!-- Conteúdo Principal -->
+  <div class="container-geral">
+    <main class="container">
+      <h1>Gerenciamento de Usuários</h1>
+
+      <button id="btnAbrirModal">Adicionar Usuário</button>
+      <!-- Filtros -->
+      <div class="filtros">
+        <label for="filtroRole">Filtrar por Role:</label>
+        <select id="filtroRole">
+          <option value="">Todos</option>
+          <option value="ADMIN">ADMIN</option>
+          <option value="CLIENTE">CLIENTE</option>
+        </select>
+        <button id="btnLimparFiltros" class="btn limpar">Limpar Filtros</button>
+      </div>
+
+      <table id="tabelaUsuarios">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Linhas serão inseridas via JavaScript -->
+        </tbody>
+
+      </table>
+
+      <div class="paginacao-container">
+        <button id="btnAnterior">Anterior</button>
+        <span id="paginacaoInfo">Página 1</span>
+        <button id="btnProximo">Próxima</button>
+      </div>
+
+      <!-- Modal de Cadastro -->
+      <div id="modal" class="modal">
+        <div class="modal-content">
+          <span class="fechar" id="fecharModal">&times;</span>
+          <h2>Novo Usuário</h2>
+          <form id="formUsuario">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" required>
+
+            <label for="role">Role:</label>
+            <select id="role" name="role">
+              <option value="CLIENTE">CLIENTE</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+
+            <button type="submit">Salvar</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div> 
+
+  <!-- Rodapé -->
+  <footer class="rodape">
+      <h3>R. Armogaste José da Silveira, 612 - St. Centro Oeste</h3>
+      <h3>Goiânia - GO, 74560-550</h3>
+      <h3>CNPJ: 03.783.850/0018-40</h3>
+      <figure>
+          <img class="logo-pequena" src="/img/SENAI_2024_completa_negativada.png" alt="Logo SENAI">
+      </figure>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="/js/usuarios.js"></script>
+</body>
+</html>
