@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Projetos</title>
+  <link rel="stylesheet" type="text/css" href="/css/styleProjetos.css">
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header class="cabecalho">
+    <figure>
+      <img class="logo" id="imgTopo" src="/img/Logo-Zeiss-Coop-Transparent.png" alt="Logo Zeiss">
+      <img class="logo" id="imgSenai" src="/img/senai-azul.png" alt="Logo Senai Azul">
+    </figure>
+  </header>
+
+  <div class="container-geral">
+
+    <!-- Modal -->
+    <div id="modalProjeto" class="modal">
+      <div class="modal-content">
+        <span class="fechar">&times;</span>
+        <h2 id="tituloModal">Cadastrar Projeto</h2>
+
+        <form id="formProjeto">
+          <input type="hidden" id="projetoId">
+
+          <label>Nome do Projeto:</label>
+          <input type="text" id="nomeProjeto" required>
+
+          <label>Objetivo:</label>
+          <textarea id="objetivo"></textarea>
+
+          <label>Atividades:</label>
+          <textarea id="atividades"></textarea>
+
+          <label>Responsável:</label>
+          <select id="responsavelId">
+            <!-- preenchido via JS com nomes dos ADMINs -->
+          </select>
+
+          <label>Prioridade:</label>
+          <select id="prioridade">
+            <option>Alta</option>
+            <option>Média</option>
+            <option>Baixa</option>
+          </select>
+
+          <label>Custo Anual Previsto:</label>
+          <input type="text" id="custoAnualPrevisto">
+
+          <label>Retorno Previsto:</label>
+          <input type="text" id="retornoPrevisto">
+
+          <label>Status:</label>
+          <select id="status">
+            <option>A iniciar</option>
+            <option>Pendente autorização</option>
+            <option>Em andamento</option>
+            <option>Atrasada</option>
+            <option>Concluído</option>
+            <option>Descontinuado</option>
+          </select>
+
+          <label>Observação:</label>
+          <textarea id="observacao"></textarea>
+
+          <label>Previsão de Início:</label>
+          <input type="date" id="previsaoInicio">
+
+          <label>Previsão de Término:</label>
+          <input type="date" id="previsaoTermino">
+
+          <label>Data Real de Finalização:</label>
+          <input type="date" id="dataRealFinalizacao">
+
+          <button type="submit">Salvar</button>
+          <button id="btnExcluirProjeto" style="display:none; background-color:#dc3545; margin-top: 10px;">Excluir Projeto</button>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- Conteúdo da Página -->
+    <main class="container">
+      <h1>Lista de Projetos</h1>
+      <div class="btn-container">
+        <button id="btnAbrirModal" class="btn-cadastrar">+ Cadastrar Projeto</button>
+      </div>
+
+      <div class="pesquisa-container">
+        <input type="checkbox" class="pesquisa-checkbox" />
+        <div class="pesquisa-box">
+          <div class="pesquisa-icon-container">
+            <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="pesquisa-icon">
+              <path d="M505 442.7l-99.7-99.7C429.8 305.9 448 259.8 448 208 448 93.1 354.9 0 240 0S32 93.1 32 208s93.1 208 208 208c51.8 0 99-18.2 135-48.7l99.7 99.7c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3zM240 368c-88.4 0-160-71.6-160-160S151.6 48 240 48s160 71.6 160 160-71.6 160-160 160z"></path>
+            </svg>
+          </div>
+          <input type="text" class="pesquisa-input" id="barraPesquisa" placeholder="Pesquisar projeto..." />
+        </div>
+      </div>      
+
+    <div class="filtros">
+      <label for="filtroStatus">Status:</label>
+      <select id="filtroStatus">
+        <option value="">Todos</option>
+        <option>A iniciar</option>
+        <option>Pendente autorização</option>
+        <option>Em andamento</option>
+        <option>Atrasada</option>
+        <option>Concluído</option>
+        <option>Descontinuado</option>
+      </select>
+
+      <label for="filtroPrioridade">Prioridade:</label>
+      <select id="filtroPrioridade">
+        <option value="">Todas</option>
+        <option>Alta</option>
+        <option>Média</option>
+        <option>Baixa</option>
+      </select>
+
+      <label for="filtroResponsavel">Responsável:</label>
+      <select id="filtroResponsavel">
+        <option value="">Todos</option>
+        <!-- Preenchido via JS -->
+      </select>
+
+      <!-- Novo container alinhado à direita -->
+      <div class="limpar-container">
+        <button id="btnLimparFiltros" class="btn-cadastrar limpar">Limpar Filtros</button>
+      </div>
+    </div>
+
+
+      <!-- Tabela de Projetos -->
+      <table id="tabelaProjetos">
+        <thead>
+          <tr>
+            <th>Projeto</th>
+            <th>Responsável</th>
+            <th>Prioridade</th>
+            <th>Custo Previsto</th>
+            <th>Retorno Previsto</th>
+            <th>Status</th>
+            <th>Prev.Início</th>
+            <th>Prev.Término</th>
+            <th>Finalização Real</th>
+            <th>Ações</th>
+          </tr>
+        </thead>        
+        <tbody>
+          <!-- Linhas via JS -->
+        </tbody>
+      </table>
+
+      <!-- Paginação -->
+      <div class="paginacao-container">
+        <button id="btnAnterior" class="paginacao" onclick="paginaAnterior()">Anterior</button>
+        <span id="paginacaoInfo">Página 1</span>
+        <button id="btnProximo" class="paginacao" onclick="proximaPagina()">Próxima</button>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Rodapé -->
+  <footer class="rodape">
+    <h3>R. Armogaste José da Silveira, 612 - St. Centro Oeste</h3>
+    <h3>Goiânia - GO, 74560-550</h3>
+    <h3>CNPJ: 03.783.850/0018-40</h3>
+    <figure>
+      <img class="logo-pequena" src="/img/SENAI_2024_completa_negativada.png" alt="Logo SENAI">
+    </figure>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="/js/projetos.js"></script>
+</body>
+</html>
