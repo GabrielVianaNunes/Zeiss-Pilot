@@ -112,7 +112,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #6c757d;
+    background-color: #cccccc;
     border: none;
     display: flex;
     align-items: center;
@@ -131,7 +131,7 @@
   }
   
   .edit-button:hover {
-    background-color: #00b4ff;
+    background-color: #007bff;
     transform: scale(1.05);
   }
   
@@ -205,13 +205,15 @@
   
   /* Rodapé */
   .rodape {
-    background: linear-gradient(to bottom, #3c9aff, #0056b3);
-    color: #fdfdfd;
+    background: #fff;
+    color: rgb(28, 9, 201);
     padding: 20px;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.6rem;
     width: 100%;
     border-top: 1px solid #ddd;
+    animation: fadeInRodape 1.5s ease-in;
+    box-shadow: 0 2px 7px rgba(0,0,0,0.2);
   }
   
   .rodape h3 {
@@ -219,7 +221,7 @@
   }
   
   .logo-pequena {
-    width: 100px;
+    width: 180px;
     height: auto;
     margin-top: 10px;
   }
