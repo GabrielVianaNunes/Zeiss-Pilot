@@ -28,7 +28,6 @@ body {
   z-index: 1000;
 }
 
-/* Ajuste das imagens no cabeçalho */
 #imgTopo {
   width: 200px;
   height: auto;
@@ -48,55 +47,59 @@ body {
   background: white;
   padding: 30px;
   margin: 160px auto 20px;
-  text-align: center;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-/* Botões */
-button {
-  background-color: #007bff;
-  color: white;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: 0.3s;
-  margin: 10px;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-/* Campo de pesquisa */
-#formPesquisa {
   display: flex;
-  justify-content: center;
-  margin: 15px 0;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 #campoPesquisa {
   width: 100%;
-  max-width: 400px;
-  padding: 10px;
-  border: 1px solid #ccc;
+  max-width: 500px;
+  padding: 12px;
+  margin: 10px 0;
   border-radius: 5px;
+  border: 1px solid #ccc;
   font-size: 1rem;
 }
 
-#btnPesquisar {
-  padding: 10px;
-  margin-left: 5px;
-  background-color: #28a745;
-  border: none;
+/* Botão Nova Visita */
+.btn-nova-visita {
+  background-color: #007bff;
   color: white;
-  cursor: pointer;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
   border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 20px auto;
+  display: block;
 }
 
-#btnPesquisar:hover {
-  background-color: #218838;
+.btn-nova-visita:hover {
+  background-color: #0056b3;
+}
+
+/* Botão Salvar Visita (agora azul) */
+.btn-salvar {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-salvar:hover {
+  background-color: #0056b3;
 }
 
 /* Grid de Visitas */
@@ -104,41 +107,54 @@ button:hover {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
-  padding: 20px;
+  width: 100%;
+  padding: 20px 0;
 }
 
-/* Card de Visita Técnica */
+/* Card */
 .visita-card {
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  transition: all 0.3s ease-in-out;
-  position: relative;
 }
 
-/* Botões dentro dos cards */
-.btn-edit, .btn-delete {
+.btn-edit,
+.btn-delete {
   padding: 5px 10px;
   border: none;
   border-radius: 5px;
+  margin-top: 10px;
   cursor: pointer;
-  font-size: 0.9rem;
+}
+
+.btn-edit { background-color: #ffc107; color: white; }
+.btn-delete { background-color: #dc3545; color: white; }
+
+/* Paginação */
+.paginacao {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
   margin-top: 10px;
 }
 
-.btn-edit {
-  background-color: #ffc107;
-  color: #fff;
+.paginacao button {
+  padding: 6px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
 }
 
-.btn-delete {
-  background-color: #dc3545;
-  color: #fff;
+.paginacao button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
-/* Modal (Corrigido para não abrir automaticamente) */
+/* Modal */
 .modal {
   display: none;
   position: fixed;
@@ -147,44 +163,41 @@ button:hover {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0,0,0,0.5);
   justify-content: center;
   align-items: center;
-  padding: 20px; /* 🔹 Garante espaço ao redor do modal */
-  overflow: auto; /* 🔹 Permite rolagem caso necessário */
+  padding: 20px;
 }
 
-/* Modal content */
 .modal-content {
   background-color: white;
-  width: 60%;
+  width: 90%;
   max-width: 600px;
-  max-height: 80vh; /* 🔹 Limita a altura para evitar que ultrapasse a tela */
-  overflow-y: auto; /* 🔹 Adiciona rolagem dentro do modal se necessário */
-  padding: 20px;
+  max-height: 95vh;
+  margin: auto;
+  overflow-y: auto;
+  padding: 30px 20px;
   border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
   text-align: center;
-  position: relative; /* 🔹 Mantém a posição relativa para alinhar corretamente */
+  position: relative;
 }
 
-/* Ajustando os inputs */
 .modal-content input,
 .modal-content select,
 .modal-content textarea {
   width: 100%;
-  padding: 10px;
   margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 10px;
   font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
-/* Ajusta a posição do botão de fechar */
 .close {
   position: absolute;
-  top: 10px;
   right: 15px;
+  top: 10px;
   font-size: 24px;
   cursor: pointer;
 }
@@ -192,19 +205,10 @@ button:hover {
 /* Rodapé */
 .rodape {
   background: linear-gradient(to bottom, #3c9aff, #0056b3);
-  color: #fdfdfd;
+  color: white;
   padding: 20px;
   text-align: center;
-  font-size: 0.9rem;
-  width: 100%;
-  border-top: 1px solid #ddd;
-  position: relative; /* 🔹 Permite que o rodapé seja empurrado pelo conteúdo */
-  bottom: 0;
-  left: 0;
-}
-
-.rodape h3 {
-  margin-bottom: 10px;
+  margin-top: auto;
 }
 
 .logo-pequena {
@@ -213,30 +217,13 @@ button:hover {
   margin-top: 10px;
 }
 
-/* Garante que a página ocupe pelo menos 100% da altura da tela */
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-/* Ajusta a altura do conteúdo principal para empurrar o rodapé para baixo */
-.container {
-  flex: 1;
-}
-
-/* Responsividade */
+/* Responsivo */
 @media screen and (max-width: 768px) {
-  .modal-content {
-    width: 95%;
-  }
-
   .container {
     max-width: 90%;
   }
 
-  #imgTopo,
-  #imgSenai {
+  #imgTopo, #imgSenai {
     width: 100px;
   }
 }
