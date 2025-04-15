@@ -402,18 +402,16 @@ table tr:hover {
 
 /* RODAPÉ */
 .rodape {
-    background: linear-gradient(to bottom, #3c9aff, #0056b3);
-    color: #fdfdfd;
+    background: #fff;
+    color: rgb(28, 9, 201);
     padding: 20px;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.6rem;
     width: 100%;
     border-top: 1px solid #ddd;
-    position: relative;
-    bottom: 0;
-    left: 0;
-    margin-top: 40px;
-}
+    animation: fadeInRodape 1.5s ease-in;
+    box-shadow: 0 2px 7px rgba(0,0,0,0.2);
+  }
 
 .rodape-conteudo {
     max-width: 1200px;
@@ -425,17 +423,13 @@ table tr:hover {
 
 .rodape h3 {
     margin-bottom: 10px;
-    font-weight: 400;
-    font-size: 1rem;
-    color: inherit;
-}
-
-.logo-pequena {
-    height: 40px;
-    width: auto;
-    margin-top: 20px;
-    filter: brightness(0) invert(1);
-}
+  }
+  
+  .logo-pequena {
+    width: 180px;
+    height: auto;
+    margin-top: 10px;
+  }
 
 .rodape-links {
     display: flex;
