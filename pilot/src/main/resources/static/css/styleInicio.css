@@ -98,6 +98,7 @@
   .boas-vindas h3 {
     font-size: 1rem;
     margin-bottom: 10px;
+    color: rgb(28, 9, 201);
     animation: fadeInText 1s ease-in-out;
   }
   
