@@ -5,31 +5,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const visitasContainer = document.getElementById("visitasContainer");
     const visitaForm = document.getElementById("visitaForm");
     const campoPesquisa = document.getElementById("campoPesquisa");
+    const visitaIdInput = document.getElementById("visitaId");
 
-    // Paginação
     const visitasPorPagina = 6;
     let paginaAtual = 1;
     let visitas = [];
 
-    // 🔹 Define a data mínima como hoje nos campos de data
     function configurarMinimaDataHoje() {
         const hoje = new Date().toISOString().split("T")[0];
         document.getElementById("dataSolicitada").setAttribute("min", hoje);
         document.getElementById("dataAgendada").setAttribute("min", hoje);
     }
 
-    // 🔹 Validações de campos de entrada
     function configurarValidacoesCampos() {
         const campoResponsavel = document.getElementById("responsavel");
         const campoQuantidade = document.getElementById("quantidade");
         const campoTelefones = document.getElementById("telefones");
 
-        // 🔸 Somente letras com acento e espaços no campo "Responsável"
         campoResponsavel.addEventListener("input", () => {
             campoResponsavel.value = campoResponsavel.value.replace(/[^A-Za-zÀ-ÿ\s]/g, "");
         });
 
-        // 🔸 Somente números inteiros no campo "Quantidade de Visitantes"
         campoQuantidade.addEventListener("keydown", (e) => {
             const permitido =
                 e.key >= '0' && e.key <= '9' ||
@@ -38,28 +34,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 e.key === 'ArrowLeft' ||
                 e.key === 'ArrowRight' ||
                 e.key === 'Tab';
-            if (!permitido) {
-                e.preventDefault();
-            }
+            if (!permitido) e.preventDefault();
         });
 
         campoQuantidade.addEventListener("paste", (e) => {
             const texto = (e.clipboardData || window.clipboardData).getData('text');
-            if (!/^\d+$/.test(texto)) {
-                e.preventDefault();
-            }
+            if (!/^\d+$/.test(texto)) e.preventDefault();
         });
 
-        // 🔸 Corrige problema de backspace no campo de telefone
         let ultimaTeclaTelefone = "";
-
         campoTelefones.addEventListener("keydown", (e) => {
             ultimaTeclaTelefone = e.key;
         });
 
         campoTelefones.addEventListener("input", () => {
             if (ultimaTeclaTelefone === "Backspace") return;
-
             let valor = campoTelefones.value.replace(/\D/g, "").slice(0, 11);
             if (valor.length <= 10) {
                 valor = valor.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
@@ -70,23 +59,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Abrir modal
     btnNovaVisita.onclick = () => {
         modal.style.display = "flex";
         visitaForm.reset();
+        visitaIdInput.value = "";
         configurarMinimaDataHoje();
-        configurarValidacoesCampos(); // ✅ Aplica validações sempre que abrir
+        configurarValidacoesCampos();
     };
 
-    // Fechar modal
     closeModal.onclick = () => modal.style.display = "none";
     window.onclick = (event) => {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
+        if (event.target === modal) modal.style.display = "none";
     };
 
-    // Carregar visitas do banco de dados
     function carregarVisitas() {
         fetch("/visitas-tecnicas/api")
             .then(response => response.json())
@@ -130,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         paginacao.innerHTML = "";
-
         const totalPaginas = Math.ceil(visitas.length / visitasPorPagina);
 
         const btnAnterior = document.createElement("button");
@@ -178,10 +162,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.editarVisita = function(id) {
         const visita = visitas.find(v => v.id === id);
+        if (!visita) return;
+
+        document.getElementById("visitaId").value = visita.id;
         document.getElementById("responsavel").value = visita.responsavel;
+        document.getElementById("empresa").value = visita.empresaInstituicao;
+        document.getElementById("dataSolicitada").value = visita.dataSolicitada;
+        document.getElementById("dataAgendada").value = visita.dataAgendada || "";
+        document.getElementById("visitaRealizada").value = visita.visitaRealizada ? "true" : "false";
+        document.getElementById("quantidade").value = visita.quantidadeVisitantes;
+        document.getElementById("local").value = visita.localVisita;
+        document.getElementById("telefones").value = visita.telefones;
+        document.getElementById("observacao").value = visita.observacao;
+
         modal.style.display = "flex";
         configurarMinimaDataHoje();
-        configurarValidacoesCampos(); // ✅ Aplica também ao editar
+        configurarValidacoesCampos();
     };
 
     window.deletarVisita = function(id) {
@@ -191,6 +187,44 @@ document.addEventListener("DOMContentLoaded", () => {
                 .catch(error => console.error("Erro ao excluir:", error));
         }
     };
+
+    visitaForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const id = document.getElementById("visitaId").value;
+        const visita = {
+            responsavel: document.getElementById("responsavel").value,
+            empresaInstituicao: document.getElementById("empresa").value,
+            dataSolicitada: document.getElementById("dataSolicitada").value,
+            dataAgendada: document.getElementById("dataAgendada").value || null,
+            visitaRealizada: document.getElementById("visitaRealizada").value === "true",
+            quantidadeVisitantes: parseInt(document.getElementById("quantidade").value, 10),
+            localVisita: document.getElementById("local").value,
+            telefones: document.getElementById("telefones").value,
+            observacao: document.getElementById("observacao").value
+        };
+
+        const metodo = id ? "PUT" : "POST";
+        const url = id ? `/visitas-tecnicas/api/${id}` : "/visitas-tecnicas/api";
+
+        fetch(url, {
+            method: metodo,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(visita)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Erro ao salvar visita");
+            return response.json();
+        })
+        .then(() => {
+            modal.style.display = "none";
+            carregarVisitas();
+        })
+        .catch(error => {
+            console.error("Erro ao salvar visita:", error);
+            alert("Erro ao salvar visita.");
+        });
+    });
 
     carregarVisitas();
 });
