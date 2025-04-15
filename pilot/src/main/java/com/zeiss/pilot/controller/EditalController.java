@@ -27,10 +27,11 @@ public class EditalController {
         this.editalService = editalService;
     }
 
+    /* ========== ROTAS PARA THYMELEAF ========== */
+
     @GetMapping("/lista")
     public String listarEditais(Model model) {
-        List<EditalDTO> editais = editalService.listarTodos();
-        model.addAttribute("editais", editais);
+        model.addAttribute("editais", editalService.listarTodos());
         return "lista-editais";
     }
 
@@ -41,45 +42,56 @@ public class EditalController {
         return "detalhes-edital";
     }
 
-    @PostMapping
+    /* ========== API REST ========== */
+
+    @PostMapping("/api")
     @ResponseBody
     public ResponseEntity<EditalDTO> criarEdital(@RequestBody EditalDTO editalDTO) {
-        EditalDTO editalCriado = editalService.criarEdital(editalDTO);
-        return ResponseEntity.ok(editalCriado);
+        try {
+            EditalDTO novoEdital = editalService.criarEdital(editalDTO);
+            return ResponseEntity.ok(novoEdital);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/api/{id}")
+    @ResponseBody
+    public ResponseEntity<EditalDTO> atualizarEdital(
+            @PathVariable Long id,
+            @RequestBody EditalDTO editalDTO) {
+        try {
+            if (!id.equals(editalDTO.getId())) {
+                editalDTO.setId(id);
+            }
+            EditalDTO editalAtualizado = editalService.atualizarEdital(id, editalDTO);
+            return ResponseEntity.ok(editalAtualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/api/{id}")
+    @ResponseBody
+    public ResponseEntity<Void> excluirEdital(@PathVariable Long id) {
+        try {
+            editalService.excluirEdital(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/api")
     @ResponseBody
     public ResponseEntity<List<EditalDTO>> listarTodosApi() {
-        List<EditalDTO> editais = editalService.listarTodos();
-        return ResponseEntity.ok(editais);
+        return ResponseEntity.ok(editalService.listarTodos());
     }
 
     @GetMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<EditalDTO> buscarPorIdApi(@PathVariable Long id) {
         EditalDTO edital = editalService.buscarPorId(id);
-        return ResponseEntity.ok(edital);
+        return edital != null ? ResponseEntity.ok(edital) : ResponseEntity.notFound().build();
     }
-
-    @PutMapping("/api/{id}")
-    @ResponseBody
-    public ResponseEntity<EditalDTO> atualizarEditalApi(@PathVariable Long id, @RequestBody EditalDTO editalDTO) {
-        EditalDTO editalAtualizado = editalService.atualizarEdital(id, editalDTO);
-        return ResponseEntity.ok(editalAtualizado);
-    }
-
-    @DeleteMapping("/api/{id}")
-@ResponseBody
-public ResponseEntity<Void> excluirEditalApi(@PathVariable Long id) {
-    try {
-        editalService.excluirEdital(id);
-        return ResponseEntity.noContent().build(); // Retorna 204 (No Content) em caso de sucesso
-    } catch (RuntimeException e) {
-        return ResponseEntity.notFound().build(); // Retorna 404 (Not Found) se o edital não existir
-    } catch (Exception e) {
-        return ResponseEntity.internalServerError().build(); // Retorna 500 (Internal Server Error) para outros erros
-    }
-}
-
 }

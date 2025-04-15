@@ -20,49 +20,68 @@ public class EditalService {
 
     public List<EditalDTO> listarTodos() {
         return editalRepository.findAll().stream()
-                .map(edital -> new EditalDTO(edital))
+                .map(this::converterParaDTO)
                 .collect(Collectors.toList());
     }
 
     public EditalDTO buscarPorId(Long id) {
         return editalRepository.findById(id)
-                .map(EditalDTO::new)
+                .map(this::converterParaDTO)
                 .orElse(null);
     }
 
     public EditalDTO criarEdital(EditalDTO editalDTO) {
-        Edital edital = new Edital();
-        edital.setNomeEdital(editalDTO.getNomeEdital());
-        edital.setInstituicaoFornecedora(editalDTO.getInstituicaoFornecedora());
-        edital.setInstituicaoParceira(editalDTO.getInstituicaoParceira());
-        edital.setStatus(editalDTO.getStatus());
-        edital.setValor(editalDTO.getValor());
-        edital.setObservacao(editalDTO.getObservacao());
-
-        Edital salvo = editalRepository.save(edital);
-        return new EditalDTO(salvo);
+        Edital edital = converterParaEntidade(editalDTO);
+        Edital editalSalvo = editalRepository.save(edital);
+        return converterParaDTO(editalSalvo);
     }
 
     public EditalDTO atualizarEdital(Long id, EditalDTO editalDTO) {
         return editalRepository.findById(id)
-                .map(edital -> {
-                    edital.setNomeEdital(editalDTO.getNomeEdital());
-                    edital.setInstituicaoFornecedora(editalDTO.getInstituicaoFornecedora());
-                    edital.setInstituicaoParceira(editalDTO.getInstituicaoParceira());
-                    edital.setStatus(editalDTO.getStatus());
-                    edital.setValor(editalDTO.getValor());
-                    edital.setObservacao(editalDTO.getObservacao());
-                    return new EditalDTO(editalRepository.save(edital));
+                .map(editalExistente -> {
+                    atualizarEntidade(editalExistente, editalDTO);
+                    Edital editalAtualizado = editalRepository.save(editalExistente);
+                    return converterParaDTO(editalAtualizado);
                 })
-                .orElse(null);
+                .orElseThrow(() -> new RuntimeException("Edital não encontrado com ID: " + id));
     }
 
     public void excluirEdital(Long id) {
         if (!editalRepository.existsById(id)) {
-            throw new RuntimeException("Edital não encontrado com o ID: " + id);
+            throw new RuntimeException("Edital não encontrado com ID: " + id);
         }
         editalRepository.deleteById(id);
-        System.out.println("Edital com ID " + id + " excluído com sucesso.");
     }
 
+    private EditalDTO converterParaDTO(Edital edital) {
+        EditalDTO dto = new EditalDTO();
+        dto.setId(edital.getId());
+        dto.setNomeEdital(edital.getNomeEdital());
+        dto.setInstituicaoFornecedora(edital.getInstituicaoFornecedora());
+        dto.setInstituicaoParceira(edital.getInstituicaoParceira());
+        dto.setStatus(edital.getStatus());
+        dto.setValor(edital.getValor());
+        dto.setObservacao(edital.getObservacao());
+        return dto;
+    }
+
+    private Edital converterParaEntidade(EditalDTO dto) {
+        Edital edital = new Edital();
+        edital.setNomeEdital(dto.getNomeEdital());
+        edital.setInstituicaoFornecedora(dto.getInstituicaoFornecedora());
+        edital.setInstituicaoParceira(dto.getInstituicaoParceira());
+        edital.setStatus(dto.getStatus());
+        edital.setValor(dto.getValor());
+        edital.setObservacao(dto.getObservacao());
+        return edital;
+    }
+
+    private void atualizarEntidade(Edital edital, EditalDTO dto) {
+        edital.setNomeEdital(dto.getNomeEdital());
+        edital.setInstituicaoFornecedora(dto.getInstituicaoFornecedora());
+        edital.setInstituicaoParceira(dto.getInstituicaoParceira());
+        edital.setStatus(dto.getStatus());
+        edital.setValor(dto.getValor());
+        edital.setObservacao(dto.getObservacao());
+    }
 }

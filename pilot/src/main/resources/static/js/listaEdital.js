@@ -1,119 +1,193 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Abrir modal de criação
-    document.getElementById('btnCriarEdital').addEventListener('click', function () {
+    // Configurações
+    const API_BASE_URL = '/editais/api';
+    const modal = document.getElementById('modalEdital');
+    const formEdital = document.getElementById('formEdital');
+
+    // Carregar editais ao iniciar
+    carregarEditais();
+
+    // Event Listeners
+    document.getElementById('btnCriarEdital').addEventListener('click', () => {
+        resetForm();
         document.getElementById('modalTitulo').textContent = 'Criar Edital';
-        document.getElementById('modalEdital').style.display = 'block';
-        document.getElementById('btnRemover').style.display = 'none'; // Esconde o botão de remover
-        document.body.classList.add('no-scroll'); // Desabilita a rolagem da página
+        document.getElementById('btnRemover').style.display = 'none';
+        abrirModal();
     });
 
-    // Fechar modal ao clicar no "X"
-    document.querySelector('.close').addEventListener('click', function () {
-        document.getElementById('modalEdital').style.display = 'none';
-        document.body.classList.remove('no-scroll'); // Habilita a rolagem da página novamente
+    document.querySelector('.close').addEventListener('click', fecharModal);
+    window.addEventListener('click', (e) => e.target === modal && fecharModal());
+
+    document.getElementById('btnRemover').addEventListener('click', removerEdital);
+    formEdital.addEventListener('submit', (e) => {
+        e.preventDefault();
+        salvarEdital();
     });
 
-    // Fechar modal ao clicar fora dele
-    window.addEventListener('click', function (event) {
-        if (event.target === document.getElementById('modalEdital')) {
-            document.getElementById('modalEdital').style.display = 'none';
-            document.body.classList.remove('no-scroll'); // Habilita a rolagem da página novamente
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-editar')) {
+            carregarEditalParaEdicao(e.target.dataset.id);
         }
     });
 
-    // Remover edital
-    document.getElementById('btnRemover').addEventListener('click', function () {
-        const editalId = document.getElementById('nomeEdital').getAttribute('data-id'); // Obtenha o ID do edital
-        console.log('ID do edital:', editalId); // Log para depuração
-
-        if (confirm('Tem certeza que deseja remover este edital?')) {
-            fetch(`/editais/api/${editalId}`, {
-                method: 'DELETE',
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Edital removido com sucesso');
-                    document.getElementById('modalEdital').style.display = 'none';
-                    document.body.classList.remove('no-scroll');
-                    window.location.reload(); // Recarrega a página para atualizar a lista
-                } else {
-                    console.error('Erro ao remover edital', response.status, response.statusText);
-                }
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-            });
-        }
-    });
-
-    // Abrir modal de edição ao clicar no botão "Editar" da tabela
-    document.querySelectorAll('.btn-editar').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            document.getElementById('modalTitulo').textContent = 'Editar Edital';
-            document.getElementById('modalEdital').style.display = 'block';
-            document.getElementById('btnRemover').style.display = 'inline-block'; // Mostra o botão de remover
-
-            // Preenche os campos do modal com os dados do edital selecionado
-            const row = this.closest('tr');
-            document.getElementById('nomeEdital').value = row.cells[0].textContent;
-            document.getElementById('instituicaoFornecedora').value = row.cells[1].textContent;
-            document.getElementById('instituicaoParceira').value = row.cells[2].textContent;
-            document.getElementById('status').value = row.cells[3].textContent;
-            document.getElementById('valor').value = row.cells[4].textContent; // Preenche o campo valor
-            document.getElementById('observacao').value = row.cells[5].textContent;
-
-            // Armazena o ID do edital no campo nomeEdital para uso na remoção
-            document.getElementById('nomeEdital').setAttribute('data-id', this.getAttribute('data-id'));
-        });
-    });
-
-    // Salvar edital (criar ou editar)
-    document.getElementById('formEdital').addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        // Captura os valores dos campos do formulário
-        const nomeEdital = document.getElementById('nomeEdital').value;
-        const instituicaoFornecedora = document.getElementById('instituicaoFornecedora').value;
-        const instituicaoParceira = document.getElementById('instituicaoParceira').value;
-        const status = document.getElementById('status').value;
-        const valor = parseFloat(document.getElementById('valor').value); // Captura o valor do campo
-        const observacao = document.getElementById('observacao').value;
-
-        // Objeto com os dados do edital
-        const editalDTO = {
-            nomeEdital: nomeEdital,
-            instituicaoFornecedora: instituicaoFornecedora,
-            instituicaoParceira: instituicaoParceira,
-            status: status,
-            valor: valor, // Adiciona o campo valor
-            observacao: observacao
-        };
-
-        // Enviar os dados para o back-end
-        fetch('/editais', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(editalDTO)
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('Erro ao salvar edital');
-            }
-        })
-        .then(data => {
-            console.log('Edital salvo com sucesso:', data);
-            // Fechar o modal após salvar
-            document.getElementById('modalEdital').style.display = 'none';
-            document.body.classList.remove('no-scroll'); // Habilita a rolagem da página novamente
-            // Recarregar a lista de editais (opcional)
-            window.location.reload();
-        })
-        .catch(error => {
+    // Funções principais
+    async function carregarEditais() {
+        try {
+            const response = await fetch(API_BASE_URL);
+            if (!response.ok) throw new Error('Erro ao carregar editais');
+            const editais = await response.json();
+            renderizarEditais(editais);
+        } catch (error) {
             console.error('Erro:', error);
-        });
+            mostrarErro('Falha ao carregar editais. Tente recarregar a página.');
+        }
+    }
+
+    async function carregarEditalParaEdicao(id) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/${id}`);
+            if (!response.ok) throw new Error('Edital não encontrado');
+            const edital = await response.json();
+            preencherFormulario(edital);
+            document.getElementById('modalTitulo').textContent = 'Editar Edital';
+            document.getElementById('btnRemover').style.display = 'inline-block';
+            abrirModal();
+        } catch (error) {
+            console.error('Erro:', error);
+            mostrarErro('Erro ao carregar edital. Tente novamente.');
+        }
+    }
+
+    async function salvarEdital() {
+        const formData = getFormData();
+        
+        try {
+            const url = formData.id ? `${API_BASE_URL}/${formData.id}` : API_BASE_URL;
+            const method = formData.id ? 'PUT' : 'POST';
+            
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Falha ao salvar edital');
+            }
+            
+            const resultado = await response.json();
+            mostrarSucesso('Edital salvo com sucesso!');
+            fecharModal();
+            carregarEditais();
+        } catch (error) {
+            console.error('Erro:', error);
+            mostrarErro(error.message || 'Erro ao salvar edital');
+        }
+    }
+
+    async function removerEdital() {
+        const id = document.getElementById('editalId').value;
+        if (!id || !confirm('Tem certeza que deseja remover este edital permanentemente?')) return;
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/${id}`, {
+                method: 'DELETE'
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Falha ao remover edital');
+            }
+            
+            mostrarSucesso('Edital removido com sucesso!');
+            fecharModal();
+            carregarEditais();
+        } catch (error) {
+            console.error('Erro ao remover edital:', error);
+            mostrarErro(error.message || 'Erro ao remover edital');
+        }
+    }
+
+    // Funções auxiliares
+    function renderizarEditais(editais) {
+        const tabela = document.getElementById('tabelaEditais');
+        tabela.innerHTML = editais.map(edital => `
+            <tr data-id="${edital.id}">
+                <td>${edital.nomeEdital}</td>
+                <td>${edital.instituicaoFornecedora}</td>
+                <td>${edital.instituicaoParceira || ''}</td>
+                <td>${formatarMoeda(edital.valor)}</td>
+                <td><div class="status-display">${edital.status}</div></td>
+                <td>${edital.observacao || ''}</td>
+                <td><button class="btn-editar" data-id="${edital.id}">Editar</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function preencherFormulario(edital) {
+        document.getElementById('editalId').value = edital.id;
+        document.getElementById('nomeEdital').value = edital.nomeEdital;
+        document.getElementById('instituicaoFornecedora').value = edital.instituicaoFornecedora;
+        document.getElementById('instituicaoParceira').value = edital.instituicaoParceira || '';
+        document.getElementById('valor').value = edital.valor;
+        document.getElementById('status').value = edital.status;
+        document.getElementById('observacao').value = edital.observacao || '';
+    }
+
+    function getFormData() {
+        return {
+            id: document.getElementById('editalId').value ? parseInt(document.getElementById('editalId').value) : null,
+            nomeEdital: document.getElementById('nomeEdital').value,
+            instituicaoFornecedora: document.getElementById('instituicaoFornecedora').value,
+            instituicaoParceira: document.getElementById('instituicaoParceira').value,
+            valor: parseFloat(document.getElementById('valor').value),
+            status: document.getElementById('status').value,
+            observacao: document.getElementById('observacao').value
+        };
+    }
+
+    function formatarMoeda(valor) {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(valor);
+    }
+
+    function abrirModal() {
+        modal.style.display = 'block';
+        document.body.classList.add('no-scroll');
+    }
+
+    function fecharModal() {
+        modal.style.display = 'none';
+        document.body.classList.remove('no-scroll');
+        resetForm();
+    }
+
+    function resetForm() {
+        formEdital.reset();
+        document.getElementById('editalId').value = '';
+        document.getElementById('status').value = 'Aguardando aprovação';
+    }
+
+    function mostrarSucesso(mensagem) {
+        alert(mensagem); // Pode ser substituído por um toast mais elegante
+    }
+
+    function mostrarErro(mensagem) {
+        alert(mensagem); // Pode ser substituído por um toast mais elegante
+    }
+
+    // Validação do campo valor
+    document.getElementById('valor').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/[^\d.]/g, '');
+        let parts = value.split('.');
+        if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
+        if (parts[1] && parts[1].length > 2) value = parts[0] + '.' + parts[1].substring(0, 2);
+        e.target.value = value;
     });
 });
