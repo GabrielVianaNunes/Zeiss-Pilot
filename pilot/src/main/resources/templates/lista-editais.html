@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lista de Editais</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" type="text/css" href="/css/styleListaEdital.css">
+</head>
+<body>
+  <header class="cabecalho">
+    <img class="logo" id="imgTopo" src="/img/Logo-Zeiss-Coop-Transparent.png" alt="Logo Zeiss">
+    <img class="logo" id="imgSenai" src="/img/senai-azul.png" alt="Logo Senai">
+  </header>
+  
+  <main class="conteudo">
+    <h1>Lista de Editais</h1>
+    <button id="btnCriarEdital" class="btn-criar">Criar Edital</button>
+    
+    <section class="lista-editais">
+      <h2>Editais Cadastrados</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Instituição Fornecedora</th>
+            <th>Instituição Parceira</th>
+            <th>Valor (R$)</th>
+            <th>Status</th>
+            <th>Observação</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaEditais">
+          <tr th:each="edital : ${editais}" data-id="${edital.id}">
+            <td th:text="${edital.nomeEdital}"></td>
+            <td th:text="${edital.instituicaoFornecedora}"></td>
+            <td th:text="${edital.instituicaoParceira}"></td>
+            <td th:text="${#numbers.formatDecimal(edital.valor, 1, 2, 'POINT')}"></td>
+            <td>
+              <div class="status-display" th:text="${edital.status}">Aguardando aprovação</div>
+            </td>
+            <td th:text="${edital.observacao}"></td>
+            <td>
+              <button class="btn-editar" th:data-id="${edital.id}">Editar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    
+    <!-- Modal -->
+    <div id="modalEdital" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="modalTitulo">Criar Edital</h2>
+        
+        <form id="formEdital">
+          <!-- Campo hidden para o ID do edital -->
+          <input type="hidden" id="editalId" name="id">
+          
+          <div class="form-group">
+            <label for="nomeEdital">Nome do Edital:</label>
+            <input type="text" id="nomeEdital" name="nomeEdital" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="instituicaoFornecedora">Instituição Fornecedora:</label>
+            <input type="text" id="instituicaoFornecedora" name="instituicaoFornecedora" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="instituicaoParceira">Instituição Parceira:</label>
+            <input type="text" id="instituicaoParceira" name="instituicaoParceira">
+          </div>
+          
+          <div class="form-group">
+            <label for="valor">Valor (R$):</label>
+            <input type="number" id="valor" name="valor" step="0.01" min="0" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+              <option value="Aguardando aprovação" selected>Aguardando aprovação</option>
+              <option value="Reprovado">Reprovado</option>
+              <option value="Aprovado">Aprovado</option>
+              <option value="Prestação de contas">Prestação de contas</option>
+              <option value="Finalizado">Finalizado</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="observacao">Observação:</label>
+            <textarea id="observacao" name="observacao" rows="4"></textarea>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" id="btnSalvar">Salvar</button>
+            <button type="button" id="btnRemover">Remover</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  
+  <footer class="rodape">
+    <h3>R. Armogaste José da Silveira, 612 - St. Centro Oeste</h3>
+    <h3>Goiânia - GO, 74560-550</h3>
+    <h3>CNPJ: 03.783.850/0018-40</h3>
+    <img class="logo-pequena" src="/img/SENAI_2024_completa_negativada.png" alt="Logo SENAI">
+  </footer>
+  
+  <script src="/js/listaEdital.js"></script>
+</body>
+</html>
