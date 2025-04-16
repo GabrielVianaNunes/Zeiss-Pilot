@@ -8,8 +8,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const numConvidadosInput = document.getElementById("numConvidados");
     const numPresentesInput = document.getElementById("numPresentes");
     const adesaoInput = document.getElementById("adesao");
+    const barraPesquisa = document.getElementById("searchInput");
 
     let ultimoValorPresentes = 0;
+    let todosEventos = []; // 🔹 Armazena todos os eventos para busca/paginação futura
 
     modal.style.display = "none";
 
@@ -36,49 +38,65 @@ document.addEventListener("DOMContentLoaded", () => {
     numConvidadosInput.addEventListener("input", calcularAdesao);
     numPresentesInput.addEventListener("input", calcularAdesao);
 
+    function renderizarEventos(eventos) {
+        eventosContainer.innerHTML = "";
+
+        eventos.forEach(evento => {
+            const adesaoCalculada = evento.numeroConvidados > 0
+                ? ((evento.numeroPresentes / evento.numeroConvidados) * 100).toFixed(2) + "%"
+                : "0%";
+
+            const dataFormatada = new Date(evento.dataEvento).toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: '2-digit'
+            });
+
+            const container = document.createElement("div");
+            container.classList.add("card");
+
+            container.innerHTML = `
+                <div class="face front">
+                    <b>${evento.nome}</b>
+                </div>
+                <div class="face back">
+                    <div class="content">
+                        <p><strong>Tipo:</strong> ${evento.tipo}</p>
+                        <p><strong>Data:</strong> ${dataFormatada}</p>
+                        <p><strong>Convidados:</strong> ${evento.numeroConvidados}</p>
+                        <p><strong>Presentes:</strong> ${evento.numeroPresentes}</p>
+                        <p><strong>Adesão:</strong> ${adesaoCalculada}</p>
+                        <div class="card-actions">
+                            <button class="btn btn-edit" onclick="editarEvento(${evento.id})">Editar</button>
+                            <button class="btn btn-delete" onclick="deletarEvento(${evento.id})">Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            eventosContainer.appendChild(container);
+        });
+    }
+
     function carregarEventos() {
         fetch("/eventos/api")
             .then(response => response.json())
             .then(eventos => {
-                eventosContainer.innerHTML = "";
-                eventos.forEach(evento => {
-                    const adesaoCalculada = evento.numeroConvidados > 0
-                        ? ((evento.numeroPresentes / evento.numeroConvidados) * 100).toFixed(2) + "%"
-                        : "0%";
-    
-                    const dataFormatada = new Date(evento.dataEvento).toLocaleDateString('pt-BR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: '2-digit'
-                    });
-    
-                    const container = document.createElement("div");
-                    container.classList.add("card");
-    
-                    container.innerHTML = `
-                        <div class="face front">
-                            <b>${evento.nome}</b>
-                        </div>
-                        <div class="face back">
-                            <div class="content">
-                                <p><strong>Tipo:</strong> ${evento.tipo}</p>
-                                <p><strong>Data:</strong> ${dataFormatada}</p>
-                                <p><strong>Convidados:</strong> ${evento.numeroConvidados}</p>
-                                <p><strong>Presentes:</strong> ${evento.numeroPresentes}</p>
-                                <p><strong>Adesão:</strong> ${adesaoCalculada}</p>
-                                <div class="card-actions">
-                                    <button class="btn btn-edit" onclick="editarEvento(${evento.id})">Editar</button>
-                                    <button class="btn btn-delete" onclick="deletarEvento(${evento.id})">Excluir</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    eventosContainer.appendChild(container);
-                });
+                todosEventos = eventos; // 🔹 Armazena para busca/paginação
+                renderizarEventos(todosEventos);
             })
             .catch(error => console.error("Erro ao carregar eventos:", error));
     }
-    
+
+    barraPesquisa.addEventListener("input", () => {
+        const termo = barraPesquisa.value.toLowerCase();
+        const eventosFiltrados = todosEventos.filter(evento =>
+            evento.nome.toLowerCase().includes(termo) ||
+            evento.tipo.toLowerCase().includes(termo) ||
+            evento.dataEvento.includes(termo)
+        );
+        renderizarEventos(eventosFiltrados);
+    });
+
     carregarEventos();
 
     btnNovoEvento.onclick = () => {
