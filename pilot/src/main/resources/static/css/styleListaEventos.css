@@ -379,3 +379,72 @@ input {
 .card:hover .face.front b {
   font-size: 1.2rem;
 }
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.mainbox {
+  width: 230px;
+  height: 40px;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: center;
+  border-radius: 160px;
+  background-color: #007bff;
+  padding: 0 10px;
+  transition: all 0.3s ease;
+}
+
+.search_input {
+  width: 170px;
+  height: 100%;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  padding-left: 10px;
+  font-size: 1em;
+  color: white;
+}
+
+.search_input::placeholder {
+  color: rgba(255, 255, 255, 0.776);
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  padding-top: 5px;
+}
+
+.search_icon {
+  fill: white;
+  font-size: 1.3em;
+  pointer-events: none;
+}
+
+.paginacao-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.paginacao-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.paginacao-btn:hover {
+  background-color: #0056b3;
+}
