@@ -11,12 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let paginaAtual = 1;
     let visitas = [];
 
-    function configurarMinimaDataHoje() {
-        const hoje = new Date().toISOString().split("T")[0];
-        document.getElementById("dataSolicitada").setAttribute("min", hoje);
-        document.getElementById("dataAgendada").setAttribute("min", hoje);
-    }
-
     function configurarValidacoesCampos() {
         const campoResponsavel = document.getElementById("responsavel");
         const campoQuantidade = document.getElementById("quantidade");
@@ -63,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
         modal.style.display = "flex";
         visitaForm.reset();
         visitaIdInput.value = "";
-        configurarMinimaDataHoje();
         configurarValidacoesCampos();
     };
 
@@ -176,7 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("observacao").value = visita.observacao;
 
         modal.style.display = "flex";
-        configurarMinimaDataHoje();
         configurarValidacoesCampos();
     };
 
