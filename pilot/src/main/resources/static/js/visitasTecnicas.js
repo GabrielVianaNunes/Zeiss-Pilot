@@ -77,6 +77,14 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(error => console.error("Erro ao carregar visitas:", error));
     }
 
+    function formatarData(dataIso) {
+        const data = new Date(dataIso);
+        const dia = String(data.getDate()).padStart(2, '0');
+        const mes = String(data.getMonth() + 1).padStart(2, '0');
+        const ano = String(data.getFullYear()).slice(-2);
+        return `${dia}/${mes}/${ano}`;
+    }
+
     function renderizarVisitas() {
         visitasContainer.innerHTML = "";
         const inicio = (paginaAtual - 1) * visitasPorPagina;
@@ -87,10 +95,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const card = document.createElement("div");
             card.classList.add("visita-card");
 
+            const dataFormatada = formatarData(visita.dataSolicitada);
+
             card.innerHTML = `
                 <h3>${visita.responsavel}</h3>
                 <p><strong>Empresa:</strong> ${visita.empresaInstituicao}</p>
-                <p><strong>Data:</strong> ${visita.dataSolicitada}</p>
+                <p><strong>Data:</strong> ${dataFormatada}</p>
                 <p><strong>Local:</strong> ${visita.localVisita}</p>
                 <button class="btn-edit" onclick="editarVisita(${visita.id})">Editar</button>
                 <button class="btn-delete" onclick="deletarVisita(${visita.id})">Excluir</button>
