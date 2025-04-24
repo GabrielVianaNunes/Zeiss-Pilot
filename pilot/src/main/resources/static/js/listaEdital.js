@@ -3,9 +3,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const API_BASE_URL = '/editais/api';
     const modal = document.getElementById('modalEdital');
     const formEdital = document.getElementById('formEdital');
+    const itensPorPagina = 10;
+    let paginaAtual = 0;
+    let todosEditais = [];
+    let totalPaginas = 0;
+
+    // Elementos da paginação (simplificada)
+    const btnAnterior = document.getElementById('btnAnterior');
+    const btnProxima = document.getElementById('btnProxima');
+    const paginacaoNumeros = document.getElementById('paginacaoNumeros');
 
     // Carregar editais ao iniciar
-    carregarEditais();
+    carregarTodosEditais();
 
     // Event Listeners
     document.getElementById('btnCriarEdital').addEventListener('click', () => {
@@ -30,17 +39,57 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Event listeners da paginação simplificada
+    btnAnterior.addEventListener('click', () => {
+        if (paginaAtual > 0) {
+            paginaAtual--;
+            renderizarPaginaAtual();
+            atualizarPaginacao();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+
+    btnProxima.addEventListener('click', () => {
+        if (paginaAtual < totalPaginas - 1) {
+            paginaAtual++;
+            renderizarPaginaAtual();
+            atualizarPaginacao();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+
     // Funções principais
-    async function carregarEditais() {
+    async function carregarTodosEditais() {
         try {
             const response = await fetch(API_BASE_URL);
             if (!response.ok) throw new Error('Erro ao carregar editais');
-            const editais = await response.json();
-            renderizarEditais(editais);
+            todosEditais = await response.json();
+            totalPaginas = Math.ceil(todosEditais.length / itensPorPagina);
+            atualizarPaginacao();
+            renderizarPaginaAtual();
         } catch (error) {
             console.error('Erro:', error);
             mostrarErro('Falha ao carregar editais. Tente recarregar a página.');
         }
+    }
+
+    function renderizarPaginaAtual() {
+        const inicio = paginaAtual * itensPorPagina;
+        const fim = Math.min(inicio + itensPorPagina, todosEditais.length);
+        const editaisPagina = todosEditais.slice(inicio, fim);
+        
+        renderizarEditais(editaisPagina);
+    }
+
+    function atualizarPaginacao() {
+        totalPaginas = Math.ceil(todosEditais.length / itensPorPagina);
+        
+        // Atualiza estado dos botões
+        btnAnterior.disabled = paginaAtual === 0;
+        btnProxima.disabled = paginaAtual >= totalPaginas - 1;
+        
+        // Atualiza o número da página
+        paginacaoNumeros.textContent = `Página ${paginaAtual + 1}`;
     }
 
     async function carregarEditalParaEdicao(id) {
@@ -80,9 +129,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const resultado = await response.json();
-            mostrarSucesso('Edital salvo com sucesso!');
             fecharModal();
-            carregarEditais();
+            carregarTodosEditais();
         } catch (error) {
             console.error('Erro:', error);
             mostrarErro(error.message || 'Erro ao salvar edital');
@@ -102,10 +150,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Falha ao remover edital');
             }
-            
-            mostrarSucesso('Edital removido com sucesso!');
+           
             fecharModal();
-            carregarEditais();
+            carregarTodosEditais();
         } catch (error) {
             console.error('Erro ao remover edital:', error);
             mostrarErro(error.message || 'Erro ao remover edital');
@@ -144,17 +191,17 @@ document.addEventListener('DOMContentLoaded', function() {
             nomeEdital: document.getElementById('nomeEdital').value,
             instituicaoFornecedora: document.getElementById('instituicaoFornecedora').value,
             instituicaoParceira: document.getElementById('instituicaoParceira').value,
-            valor: parseFloat(document.getElementById('valor').value),
+            valor: parseFloat(document.getElementById('valor').value.replace(',', '.')),
             status: document.getElementById('status').value,
             observacao: document.getElementById('observacao').value
         };
     }
 
     function formatarMoeda(valor) {
-        return new Intl.NumberFormat('pt-BR', {
+        return valor.toLocaleString('pt-BR', {
             style: 'currency',
             currency: 'BRL'
-        }).format(valor);
+        });
     }
 
     function abrirModal() {
@@ -175,19 +222,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function mostrarSucesso(mensagem) {
-        alert(mensagem); // Pode ser substituído por um toast mais elegante
+        alert(mensagem);
     }
 
     function mostrarErro(mensagem) {
-        alert(mensagem); // Pode ser substituído por um toast mais elegante
+        alert(mensagem);
     }
 
     // Validação do campo valor
     document.getElementById('valor').addEventListener('input', function(e) {
-        let value = e.target.value.replace(/[^\d.]/g, '');
-        let parts = value.split('.');
-        if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
-        if (parts[1] && parts[1].length > 2) value = parts[0] + '.' + parts[1].substring(0, 2);
+        let value = e.target.value.replace(/[^\d,]/g, '');
+        let parts = value.split(',');
+        if (parts.length > 2) value = parts[0] + ',' + parts.slice(1).join('');
+        if (parts[1] && parts[1].length > 2) value = parts[0] + ',' + parts[1].substring(0, 2);
         e.target.value = value;
     });
 });

@@ -1,39 +1,28 @@
 /* RESET E CONFIGURAÇÕES GERAIS */
-:root {
-    --primary-color: #007bff;
-    --primary-hover: #0056b3;
-    --danger-color: #dc3545;
-    --danger-hover: #c82333;
-    --text-color: #333;
-    --light-bg: #f5f5f5;
-    --white: #fff;
-    --shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    --shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
     font-size: 16px;
-    background-color: var(--light-bg);
-    color: var(--text-color);
+    background-color: #f5f5f5;
+    color: #333;
     line-height: 1.6;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    padding-top: 80px;
 }
 
-/* CABEÇALHO ATUALIZADO E OTIMIZADO */
+/* CABEÇALHO */
 .cabecalho {
-    background-color: var(--white);
+    background-color: #fff;
     width: 100%;
     padding: 12px 20px;
-    box-shadow: var(--shadow);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -48,7 +37,7 @@ body {
 .cabecalho.scrolled {
     height: 60px;
     padding: 8px 15px;
-    box-shadow: var(--shadow-hover);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .cabecalho-esquerda {
@@ -64,19 +53,13 @@ body {
 }
 
 #imgTopo {
-    height: 56px;
-    width: auto;
-    transition: all 0.3s ease;
-}
-
-#imgTopo.scrolled {
-    height: 44px;
+    width: 200px;
+    height: auto;
 }
 
 #imgSenai {
-    height: 36px;
-    width: auto;
-    transition: all 0.3s ease;
+    width: 150px;
+    height: auto;
 }
 
 #imgSenai.scrolled {
@@ -89,7 +72,7 @@ body {
 }
 
 .cabecalho-link {
-    color: var(--text-color);
+    color: #333;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s;
@@ -98,7 +81,7 @@ body {
 }
 
 .cabecalho-link:hover {
-    color: var(--primary-color);
+    color: #007bff;
     background-color: rgba(0, 123, 255, 0.1);
 }
 
@@ -108,16 +91,20 @@ body {
     border: none;
     font-size: 24px;
     cursor: pointer;
-    color: var(--text-color);
+    color: #333;
 }
 
 /* CONTEÚDO PRINCIPAL */
 .conteudo {
-    flex: 1;
-    padding: 100px 20px 20px;
-    max-width: 1200px;
-    margin: 0 auto;
     width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    flex: 1;
+    margin-bottom: 40px;
 }
 
 .conteudo h1 {
@@ -127,13 +114,35 @@ body {
     text-align: center;
 }
 
+/* BOTÃO CRIAR EDITAL - NOVO ESTILO */
+.btn-criar {
+    background-color: #f3f7fe;
+    color: #3b82f6;
+    border: none;
+    border-radius: 8px;
+    width: 150px;
+    height: 45px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: block;
+    margin: 0 auto 30px;
+}
+
+.btn-criar:hover {
+    background-color: #3b82f6;
+    box-shadow: 0 0 0 5px #3b83f65f;
+    color: #fff;
+}
+
 /* LISTA DE EDITAIS */
 .lista-editais {
-    background-color: var(--white);
     padding: 25px;
     border-radius: 8px;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
     margin-top: 20px;
+    text-align: center;
 }
 
 .lista-editais h2 {
@@ -142,16 +151,22 @@ body {
     margin-bottom: 20px;
 }
 
-table {
+.tabela-container {
+    display: flex;
+    justify-content: center;
     width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: auto;
     border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 0.95rem;
+    margin: 20px auto;
 }
 
 table th, table td {
     padding: 12px 15px;
-    text-align: left;
+    text-align: center;
     border-bottom: 1px solid #e0e0e0;
 }
 
@@ -179,77 +194,90 @@ table tr:hover {
     min-width: 120px;
 }
 
-/* BOTÕES */
-.btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow);
-}
-
-.btn-danger {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-.btn-danger:hover {
-    background-color: var(--danger-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow);
-}
-
+/* BOTÃO EDITAR - NOVO ESTILO */
 .btn-editar {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
+    --color: #0077ff;
+    font-family: inherit;
+    display: inline-block;
+    width: 6em;
+    height: 2.6em;
+    line-height: 2.5em;
+    overflow: hidden;
     cursor: pointer;
-    transition: all 0.3s;
+    margin: 0 5px;
     font-size: 14px;
+    z-index: 1;
+    color: var(--color);
+    border: 2px solid var(--color);
+    border-radius: 6px;
+    position: relative;
+    background: transparent;
+    transition: color 0.3s;
+}
+
+.btn-editar::before {
+    position: absolute;
+    content: "";
+    background: var(--color);
+    width: 150px;
+    height: 200px;
+    z-index: -1;
+    border-radius: 50%;
+    top: 100%;
+    left: 100%;
+    transition: 0.3s all;
 }
 
 .btn-editar:hover {
-    background-color: var(--primary-hover);
-    box-shadow: var(--shadow);
+    color: white;
 }
 
-.btn-criar {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 12px 24px;
-    border: none;
+.btn-editar:hover::before {
+    top: -30px;
+    left: -30px;
+}
+
+/* PAGINAÇÃO */
+.paginacao-container {
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.paginacao {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.paginacao-btn {
+    padding: 8px 20px;
+    border: 1px solid #ddd;
+    background-color: #fff;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
-    margin-bottom: 30px;
-    display: block;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
     transition: all 0.3s;
+    font-size: 0.95rem;
+    color: #333;
 }
 
-.btn-criar:hover {
-    background-color: var(--primary-hover);
-    box-shadow: var(--shadow-hover);
+.paginacao-btn:hover:not(:disabled) {
+    background-color: #f8f9fa;
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.paginacao-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f8f9fa;
+}
+
+.paginacao-numeros {
+    font-size: 0.95rem;
+    color: #007bff;
+    font-weight: 500;
+    padding: 8px 12px;
 }
 
 /* MODAL */
@@ -305,7 +333,7 @@ table tr:hover {
     color: #333;
 }
 
-/* FORMULÁRIO COMPACTO */
+/* FORMULÁRIO */
 #modalTitulo {
     text-align: center;
     color: #000000;
@@ -350,7 +378,7 @@ table tr:hover {
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-    border-color: var(--primary-color);
+    border-color: #007bff;
     outline: none;
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
@@ -360,7 +388,6 @@ table tr:hover {
     resize: vertical;
 }
 
-/* BOTÕES COMPACTOS */
 .form-actions {
     display: flex;
     justify-content: center;
@@ -368,8 +395,9 @@ table tr:hover {
     gap: 10px;
 }
 
-#btnSalvar {
-    background-color: var(--primary-color);
+/* BOTÕES DO MODAL */
+.btn-salvar {
+    background-color: #007bff;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -379,13 +407,13 @@ table tr:hover {
     transition: all 0.3s;
 }
 
-#btnSalvar:hover {
-    background-color: var(--primary-hover);
-    box-shadow: var(--shadow);
+.btn-salvar:hover {
+    background-color: #0056b3;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-#btnRemover {
-    background-color: var(--danger-color);
+.btn-remover {
+    background-color: #dc3545;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -395,9 +423,9 @@ table tr:hover {
     transition: all 0.3s;
 }
 
-#btnRemover:hover {
-    background-color: var(--danger-hover);
-    box-shadow: var(--shadow);
+.btn-remover:hover {
+    background-color: #c82333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* RODAPÉ */
@@ -409,9 +437,8 @@ table tr:hover {
     font-size: 0.6rem;
     width: 100%;
     border-top: 1px solid #ddd;
-    animation: fadeInRodape 1.5s ease-in;
     box-shadow: 0 2px 7px rgba(0,0,0,0.2);
-  }
+}
 
 .rodape-conteudo {
     max-width: 1200px;
@@ -423,13 +450,13 @@ table tr:hover {
 
 .rodape h3 {
     margin-bottom: 10px;
-  }
-  
-  .logo-pequena {
+}
+
+.logo-pequena {
     width: 180px;
     height: auto;
     margin-top: 10px;
-  }
+}
 
 .rodape-links {
     display: flex;
@@ -453,7 +480,7 @@ table tr:hover {
 /* LOADER */
 .loader {
     border: 3px solid #f3f3f3;
-    border-top: 3px solid var(--primary-color);
+    border-top: 3px solid #007bff;
     border-radius: 50%;
     width: 20px;
     height: 20px;
@@ -490,6 +517,10 @@ table tr:hover {
 
 /* RESPONSIVIDADE */
 @media (max-width: 768px) {
+    body {
+        padding-top: 70px;
+    }
+    
     .cabecalho {
         flex-wrap: wrap;
         height: auto;
@@ -520,7 +551,8 @@ table tr:hover {
     }
 
     .conteudo {
-        padding-top: 150px;
+        padding: 20px;
+        margin: 15px auto;
     }
 
     .modal-content {
@@ -537,8 +569,12 @@ table tr:hover {
         gap: 10px;
     }
 
-    #btnRemover {
+    .btn-remover {
         margin-top: 10px;
+    }
+
+    .paginacao {
+        gap: 10px;
     }
 
     .rodape {
@@ -556,6 +592,10 @@ table tr:hover {
 }
 
 @media (max-width: 480px) {
+    body {
+        padding-top: 60px;
+    }
+    
     .cabecalho {
         padding: 8px 10px;
     }
@@ -569,16 +609,27 @@ table tr:hover {
     }
 
     .conteudo {
-        padding-top: 120px;
-    }
-    
-    table {
-        display: block;
-        overflow-x: auto;
+        padding: 15px;
+        margin: 10px auto;
+        border-radius: 6px;
     }
     
     .btn-criar {
         width: 100%;
         text-align: center;
+    }
+    
+    .paginacao {
+        gap: 8px;
+    }
+    
+    .paginacao-btn {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .paginacao-numeros {
+        padding: 6px 10px;
+        font-size: 0.9rem;
     }
 }
