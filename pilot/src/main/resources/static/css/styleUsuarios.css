@@ -338,3 +338,130 @@ form button[type="submit"]:hover {
 #paginacaoInfo {
   font-weight: bold;
 }
+
+/* Modal de Confirmação de Senha */
+#modalSenhaConfirmacao {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+#modalSenhaConfirmacao .modal-content {
+  background-color: #fff;
+  margin: 12% auto;
+  padding: 30px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.4s ease-in-out;
+}
+
+#modalSenhaConfirmacao h3 {
+  margin-top: 10px;
+  font-size: 1.3rem;
+  color: #333;
+}
+
+#modalSenhaConfirmacao .icone-validacao {
+  font-size: 2.4rem;
+  color: #3c9aff;
+}
+
+#modalSenhaConfirmacao input[type="password"] {
+  padding: 10px;
+  width: 90%;
+  max-width: 300px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  margin: 15px 0;
+  font-size: 1rem;
+}
+
+#modalSenhaConfirmacao button {
+  margin: 8px 5px 0;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease;
+}
+
+#modalSenhaConfirmacao #btnConfirmarSenha {
+  background-color: #3c9aff;
+  color: white;
+}
+
+#modalSenhaConfirmacao #btnConfirmarSenha:hover {
+  background-color: #2f7edc;
+}
+
+#modalSenhaConfirmacao #btnCancelarSenha {
+  background-color: #eee;
+  color: #333;
+}
+
+#modalSenhaConfirmacao #btnCancelarSenha:hover {
+  background-color: #ddd;
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#notificacao {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #333;
+  color: #fff;
+  padding: 16px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  z-index: 1000;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#notificacao.mostrar {
+  display: block;
+  opacity: 1;
+}
+
+/* Botão de excluir dentro do modal */
+form button#btnExcluirUsuario {
+  background-color: #dc3545;
+  color: white;
+  padding: 12px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+  width: 100%;
+  display: none; /* Só aparece no modo edição */
+}
+
+form button#btnExcluirUsuario:hover {
+  background-color: #a71d2a;
+}

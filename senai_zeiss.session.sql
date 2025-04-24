@@ -1,1 +1,1 @@
-SELECT * FROM projetos;
+SELECT * FROM usuarios
