@@ -1,10 +1,12 @@
 package com.zeiss.pilot.controller;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,17 +16,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.zeiss.pilot.dto.UsuarioDTO;
 import com.zeiss.pilot.entity.Usuario;
 import com.zeiss.pilot.service.UsuarioService;
 
-@Controller
+@RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // 🔹 API REST: Listar usuários
     @GetMapping("/api")
@@ -39,7 +45,6 @@ public class UsuarioController {
 
     // 🔹 API REST: Criar novo usuário
     @PostMapping("/api")
-    @ResponseBody
     public ResponseEntity<UsuarioDTO> criarUsuario(@RequestBody Usuario usuario) {
         return ResponseEntity.ok(usuarioService.criarUsuario(usuario));
     }
@@ -71,5 +76,15 @@ public class UsuarioController {
     public ResponseEntity<UsuarioDTO> buscarUsuarioPorId(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
+
+    @PostMapping("/api/validar-senha-admin")
+    public ResponseEntity<Boolean> validarSenhaAdmin(@RequestBody Map<String, String> payload, Principal principal) {
+        String senhaDigitada = payload.get("senha");
+        String email = principal.getName(); 
+        Usuario usuario = usuarioService.buscarPorEmail(email);
+        boolean senhaCorreta = passwordEncoder.matches(senhaDigitada, usuario.getSenha());
+        return ResponseEntity.ok(senhaCorreta);
+    }
+
 
 }

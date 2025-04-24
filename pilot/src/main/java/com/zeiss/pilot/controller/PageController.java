@@ -7,23 +7,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/")
 public class PageController {
-
-    // Página inicial
+    
     @GetMapping
     public String paginaInicial() {
         return "index";
     }
 
-    // Página de Projetos
     @GetMapping("/projetos")
     public String paginaProjetos() {
         return "projetos";
     }
 
-    // Página de Usuários
     @GetMapping("/usuarios")
     public String paginaUsuarios() {
         return "usuarios";
     }
 
+    @GetMapping("/index") // Adicionada na Solução 1
+    public String redirecionarParaPaginaInicial() {
+        return "index";
+    }
 }
+
