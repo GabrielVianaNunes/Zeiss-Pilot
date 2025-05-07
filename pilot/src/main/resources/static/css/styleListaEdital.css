@@ -21,8 +21,8 @@ body {
 .cabecalho {
     background-color: #fff;
     width: 100%;
-    padding: 12px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -30,13 +30,11 @@ body {
     top: 0;
     left: 0;
     z-index: 1000;
-    transition: all 0.3s ease;
-    height: 80px;
 }
 
 .cabecalho.scrolled {
     height: 60px;
-    padding: 8px 15px;
+    padding: 8px 5%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -96,15 +94,15 @@ body {
 
 /* CONTEÚDO PRINCIPAL */
 .conteudo {
-    width: 100%;
-    max-width: 1200px;
-    margin: 20px auto;
+    width: 90%;
+    max-width: 1100px;
+    margin: 100px auto;
     padding: 30px;
     background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     flex: 1;
-    margin-bottom: 40px;
+    margin-bottom: 50px;
 }
 
 .conteudo h1 {
@@ -114,7 +112,7 @@ body {
     text-align: center;
 }
 
-/* BOTÃO CRIAR EDITAL - NOVO ESTILO */
+/* BOTÃO CRIAR EDITAL */
 .btn-criar {
     background-color: #f3f7fe;
     color: #3b82f6;
@@ -156,12 +154,15 @@ body {
     justify-content: center;
     width: 100%;
     overflow-x: auto;
+    padding: 15px 0;
 }
 
 table {
-    width: auto;
+    width: 100%;
+    max-width: 100%;
     border-collapse: collapse;
     margin: 20px auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 table th, table td {
@@ -194,7 +195,7 @@ table tr:hover {
     min-width: 120px;
 }
 
-/* BOTÃO EDITAR - NOVO ESTILO */
+/* BOTÃO EDITAR */
 .btn-editar {
     --color: #0077ff;
     font-family: inherit;
@@ -254,9 +255,9 @@ table tr:hover {
     padding: 8px 20px;
     border: 1px solid #ddd;
     background-color: #fff;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s ease-in-out;
     font-size: 0.95rem;
     color: #333;
 }
@@ -297,10 +298,10 @@ table tr:hover {
 .modal-content {
     background-color: white;
     margin: 0 auto;
-    padding: 30px;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 500px;
+    padding: 25px;
+    border-radius: 10px;
+    width: auto;
+    max-width: 450px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
     position: relative;
     top: 50%;
@@ -347,7 +348,7 @@ table tr:hover {
     gap: 12px;
     width: 100%;
     margin: 0 auto;
-    max-width: 400px;
+    max-width: 100%;
 }
 
 .form-group {
@@ -372,6 +373,7 @@ table tr:hover {
     border-radius: 4px;
     font-size: 0.9rem;
     width: 100%;
+    max-width: 100%;
     transition: border-color 0.3s;
 }
 
@@ -401,10 +403,10 @@ table tr:hover {
     color: white;
     padding: 10px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 0.9rem;
-    transition: all 0.3s;
+    transition: all 0.2s ease-in-out;
 }
 
 .btn-salvar:hover {
@@ -417,10 +419,10 @@ table tr:hover {
     color: white;
     padding: 10px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 0.9rem;
-    transition: all 0.3s;
+    transition: all 0.2s ease-in-out;
 }
 
 .btn-remover:hover {
@@ -441,7 +443,7 @@ table tr:hover {
 }
 
 .rodape-conteudo {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -524,7 +526,7 @@ table tr:hover {
     .cabecalho {
         flex-wrap: wrap;
         height: auto;
-        padding: 10px 15px;
+        padding: 10px 5%;
     }
     
     .cabecalho-nav {
@@ -551,17 +553,15 @@ table tr:hover {
     }
 
     .conteudo {
+        width: 95%;
         padding: 20px;
-        margin: 15px auto;
+        margin: 100px auto;
+        border-radius: 10px;
     }
 
     .modal-content {
         padding: 20px 15px;
-        width: 95%;
-    }
-
-    #formEdital {
-        max-width: 100%;
+        width: 90%;
     }
 
     .form-actions {
@@ -597,7 +597,7 @@ table tr:hover {
     }
     
     .cabecalho {
-        padding: 8px 10px;
+        padding: 8px 5%;
     }
     
     .cabecalho-esquerda, .cabecalho-direita {
@@ -609,14 +609,20 @@ table tr:hover {
     }
 
     .conteudo {
+        width: 98%;
         padding: 15px;
-        margin: 10px auto;
-        border-radius: 6px;
+        margin: 100px auto;
+        border-radius: 8px;
     }
     
     .btn-criar {
         width: 100%;
         text-align: center;
+    }
+    
+    .modal-content {
+        width: 95%;
+        padding: 15px;
     }
     
     .paginacao {

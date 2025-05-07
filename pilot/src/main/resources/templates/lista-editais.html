@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
   <title>Lista de Editais</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" type="text/css" href="/css/styleListaEdital.css">
@@ -14,7 +16,7 @@
   </header>
   
   <main class="conteudo">
-    <h1>Lista de Editais</h1>
+    <h1>Lista de Editais</h1> <!-- CABEÇALHO MANTIDO -->
     <button id="btnCriarEdital" class="btn-criar">Criar Edital</button>
     
     <section class="lista-editais">
@@ -48,7 +50,6 @@
             
             <button id="btnProxima" class="paginacao-btn paginacao-nav">Próxima</button>
         </div>
-       </div>
       </div>
     </section>
     

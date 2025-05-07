@@ -7,8 +7,10 @@ document.addEventListener('DOMContentLoaded', function() {
     let paginaAtual = 0;
     let todosEditais = [];
     let totalPaginas = 0;
+    let csrfToken = document.querySelector('meta[name="_csrf"]')?.content || '';
+    let csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
 
-    // Elementos da paginação (simplificada)
+    // Elementos da paginação
     const btnAnterior = document.getElementById('btnAnterior');
     const btnProxima = document.getElementById('btnProxima');
     const paginacaoNumeros = document.getElementById('paginacaoNumeros');
@@ -39,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Event listeners da paginação simplificada
+    // Event listeners da paginação
     btnAnterior.addEventListener('click', () => {
         if (paginaAtual > 0) {
             paginaAtual--;
@@ -61,15 +63,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Funções principais
     async function carregarTodosEditais() {
         try {
-            const response = await fetch(API_BASE_URL);
-            if (!response.ok) throw new Error('Erro ao carregar editais');
+            const response = await fetch(API_BASE_URL, {
+                headers: {
+                    'Accept': 'application/json',
+                    [csrfHeader]: csrfToken
+                }
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Erro ao carregar editais');
+            }
+            
             todosEditais = await response.json();
             totalPaginas = Math.ceil(todosEditais.length / itensPorPagina);
             atualizarPaginacao();
             renderizarPaginaAtual();
         } catch (error) {
             console.error('Erro:', error);
-            mostrarErro('Falha ao carregar editais. Tente recarregar a página.');
+            // Removida a chamada para mostrarErro
         }
     }
 
@@ -83,19 +95,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function atualizarPaginacao() {
         totalPaginas = Math.ceil(todosEditais.length / itensPorPagina);
-        
-        // Atualiza estado dos botões
         btnAnterior.disabled = paginaAtual === 0;
         btnProxima.disabled = paginaAtual >= totalPaginas - 1;
-        
-        // Atualiza o número da página
         paginacaoNumeros.textContent = `Página ${paginaAtual + 1}`;
     }
 
     async function carregarEditalParaEdicao(id) {
         try {
-            const response = await fetch(`${API_BASE_URL}/${id}`);
-            if (!response.ok) throw new Error('Edital não encontrado');
+            const response = await fetch(`${API_BASE_URL}/${id}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    [csrfHeader]: csrfToken
+                }
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Edital não encontrado');
+            }
+            
             const edital = await response.json();
             preencherFormulario(edital);
             document.getElementById('modalTitulo').textContent = 'Editar Edital';
@@ -103,14 +121,19 @@ document.addEventListener('DOMContentLoaded', function() {
             abrirModal();
         } catch (error) {
             console.error('Erro:', error);
-            mostrarErro('Erro ao carregar edital. Tente novamente.');
+            // Removida a chamada para mostrarErro
         }
     }
 
     async function salvarEdital() {
         const formData = getFormData();
+        const btnSalvar = document.getElementById('btnSalvar');
+        const btnTextoOriginal = btnSalvar.textContent;
         
         try {
+            btnSalvar.disabled = true;
+            btnSalvar.textContent = 'Salvando...';
+            
             const url = formData.id ? `${API_BASE_URL}/${formData.id}` : API_BASE_URL;
             const method = formData.id ? 'PUT' : 'POST';
             
@@ -118,7 +141,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    [csrfHeader]: csrfToken
                 },
                 body: JSON.stringify(formData)
             });
@@ -128,48 +152,70 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(errorData.message || 'Falha ao salvar edital');
             }
             
-            const resultado = await response.json();
+            await response.json();
             fecharModal();
             carregarTodosEditais();
+            // Removida a chamada para mostrarSucesso
         } catch (error) {
             console.error('Erro:', error);
-            mostrarErro(error.message || 'Erro ao salvar edital');
+            // Removida a chamada para mostrarErro
+        } finally {
+            btnSalvar.disabled = false;
+            btnSalvar.textContent = btnTextoOriginal;
         }
     }
 
     async function removerEdital() {
         const id = document.getElementById('editalId').value;
-        if (!id || !confirm('Tem certeza que deseja remover este edital permanentemente?')) return;
+        if (!id) return;
+        
+        if (!confirm('Tem certeza que deseja remover este edital permanentemente?')) {
+            return;
+        }
+        
+        const btnRemover = document.getElementById('btnRemover');
+        const btnTextoOriginal = btnRemover.textContent;
         
         try {
+            btnRemover.disabled = true;
+            btnRemover.textContent = 'Removendo...';
+            
             const response = await fetch(`${API_BASE_URL}/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json',
+                    [csrfHeader]: csrfToken
+                }
             });
             
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Falha ao remover edital');
             }
-           
+            
             fecharModal();
             carregarTodosEditais();
+            // Removida a chamada para mostrarSucesso
         } catch (error) {
             console.error('Erro ao remover edital:', error);
-            mostrarErro(error.message || 'Erro ao remover edital');
+            // Removida a chamada para mostrarErro
+        } finally {
+            btnRemover.disabled = false;
+            btnRemover.textContent = btnTextoOriginal;
         }
     }
 
-    // Funções auxiliares
+    // Funções auxiliares (mantidas mas não usadas para mensagens)
     function renderizarEditais(editais) {
         const tabela = document.getElementById('tabelaEditais');
         tabela.innerHTML = editais.map(edital => `
             <tr data-id="${edital.id}">
                 <td>${edital.nomeEdital}</td>
                 <td>${edital.instituicaoFornecedora}</td>
-                <td>${edital.instituicaoParceira || ''}</td>
+                <td>${edital.instituicaoParceira || '-'}</td>
                 <td>${formatarMoeda(edital.valor)}</td>
                 <td><div class="status-display">${edital.status}</div></td>
-                <td>${edital.observacao || ''}</td>
+                <td>${edital.observacao || '-'}</td>
                 <td><button class="btn-editar" data-id="${edital.id}">Editar</button></td>
             </tr>
         `).join('');
@@ -198,20 +244,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function formatarMoeda(valor) {
-        return valor.toLocaleString('pt-BR', {
+        return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
             currency: 'BRL'
-        });
+        }).format(valor);
     }
 
     function abrirModal() {
         modal.style.display = 'block';
-        document.body.classList.add('no-scroll');
+        document.body.style.overflow = 'hidden';
     }
 
     function fecharModal() {
         modal.style.display = 'none';
-        document.body.classList.remove('no-scroll');
+        document.body.style.overflow = 'auto';
         resetForm();
     }
 
@@ -219,14 +265,6 @@ document.addEventListener('DOMContentLoaded', function() {
         formEdital.reset();
         document.getElementById('editalId').value = '';
         document.getElementById('status').value = 'Aguardando aprovação';
-    }
-
-    function mostrarSucesso(mensagem) {
-        alert(mensagem);
-    }
-
-    function mostrarErro(mensagem) {
-        alert(mensagem);
     }
 
     // Validação do campo valor
