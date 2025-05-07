@@ -1,1 +1,1 @@
-SELECT * FROM usuarios
+SELECT id, email, role FROM usuarios;
