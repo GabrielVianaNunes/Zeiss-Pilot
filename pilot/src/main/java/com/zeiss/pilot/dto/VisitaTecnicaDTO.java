@@ -19,10 +19,8 @@ public class VisitaTecnicaDTO {
     private String observacao;
     private LocalDateTime createdAt;
 
-    // Construtor Padrão
     public VisitaTecnicaDTO() {}
 
-    // Construtor com parâmetros
     public VisitaTecnicaDTO(Long id, String responsavel, String empresaInstituicao, LocalDate dataSolicitada,
                             LocalDate dataAgendada, Boolean visitaRealizada, Integer quantidadeVisitantes,
                             String localVisita, String telefones, String observacao, LocalDateTime createdAt) {
@@ -39,7 +37,6 @@ public class VisitaTecnicaDTO {
         this.createdAt = createdAt;
     }
 
-    // ✅ Método para converter de entidade para DTO
     public static VisitaTecnicaDTO fromEntity(VisitaTecnica entity) {
         return new VisitaTecnicaDTO(
             entity.getId(),
@@ -52,11 +49,10 @@ public class VisitaTecnicaDTO {
             entity.getLocalVisita(),
             entity.getTelefones(),
             entity.getObservacao(),
-            null // ← `createdAt` não existe na entidade, omitido aqui
+            entity.getCreatedAt()
         );
     }
 
-    // ✅ Método para converter de DTO para entidade
     public VisitaTecnica toEntity() {
         return new VisitaTecnica(
             this.id,

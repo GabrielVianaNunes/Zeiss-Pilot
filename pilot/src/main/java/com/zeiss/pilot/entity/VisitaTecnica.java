@@ -1,7 +1,11 @@
 package com.zeiss.pilot.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,6 +28,10 @@ public class VisitaTecnica {
     private String localVisita;
     private String telefones;
     private String observacao;
+    
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     public VisitaTecnica() {}
 
@@ -72,4 +80,6 @@ public class VisitaTecnica {
 
     public String getObservacao() { return observacao; }
     public void setObservacao(String observacao) { this.observacao = observacao; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
 }
