@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -70,6 +72,11 @@ public class DocumentoPDFController {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario usuario = usuarioService.buscarPorEmail(email);
         return service.listarPorUsuarioComFiltro(usuario.getId(), status, nome);
+    }
+
+    @GetMapping("/abrir/{id}")
+    public ResponseEntity<Resource> abrirDocumento(@PathVariable Long id) {
+        return service.abrirDocumentoComoResource(id);
     }
 
 }

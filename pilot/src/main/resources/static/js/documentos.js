@@ -86,11 +86,16 @@ document.addEventListener("DOMContentLoaded", function () {
         <td>${doc.nomeArquivo}</td>
         <td>${formatarData(doc.dataExpiracao)}</td>
         <td><span class="status ${classeStatus}">${statusFormatado}</span></td>
+        <td><button class="acao abrir" onclick="abrirPDF(${doc.id})">Abrir</button></td>
         <td><button class="acao editar" onclick='abrirModalEdicao(${JSON.stringify(doc)})'>Editar</button></td>
       `;
       tabelaCorpo.appendChild(tr);
     });
   }
+
+  window.abrirPDF = function(id) {
+    window.open(`/api/documentos/abrir/${id}`, '_blank');
+  }  
 
   function formatarData(dataISO) {
     const [ano, mes, dia] = dataISO.split("-");
