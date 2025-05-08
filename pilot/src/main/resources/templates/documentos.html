@@ -25,7 +25,7 @@
     <button id="btnMostrarUpload" type="button" style="margin: 0 auto 20px; display: block;">Adicionar Arquivo</button>
 
     <!-- Formulário de Upload com visual customizado -->
-    <form id="formDocumento" style="display: none; flex-direction: column; align-items: center; gap: 20px;">
+    <form id="formDocumento">
 
     <!-- Componente visual do upload -->
     <div class="upload-container">
@@ -50,12 +50,39 @@
         <input id="arquivo" name="arquivo" type="file" accept="application/pdf" required>
     </div>
 
-    <!-- Campo de data + botão enviar -->
-    <label for="dataExpiracao">Data de Expiração:</label>
-    <input type="date" id="dataExpiracao" name="dataExpiracao" required>
+    <div class="campo-data">
+      <label for="dataExpiracao">Data de Expiração:</label>
+      <input type="date" id="dataExpiracao" name="dataExpiracao" required>
+    </div>    
 
-    <button type="submit">Enviar Documento</button>
+    <button type="submit" class="botao-upload">Enviar Documento</button>
     </form>
+
+    <!-- Bloco de Pesquisa e Filtros -->
+  <div class="pesquisa-container">
+    <input checked class="pesquisa-checkbox" type="checkbox">
+    <div class="pesquisa-box">
+      <div class="pesquisa-icon-container">
+        <!-- ícone lupa -->
+        <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="pesquisa-icon">
+          <path d="..."></path>
+        </svg>
+      </div>
+      <input class="pesquisa-input" id="barraPesquisa" placeholder="Pesquisar nome do arquivo..." type="text">
+    </div>
+  </div>
+
+  <div class="filtros">
+    <label for="filtroStatus">Status:</label>
+    <select id="filtroStatus">
+      <option value="">Todos</option>
+      <option value="ativo">Ativo</option>
+      <option value="prestes-a-vencer">Prestes a Vencer</option>
+      <option value="expirado">Expirado</option>
+    </select>
+
+    <button id="btnLimparFiltros" class="btn-cadastrar limpar">Limpar Filtros</button>
+  </div>
 
     <!-- Tabela de Documentos -->
     <section id="listaDocumentos">

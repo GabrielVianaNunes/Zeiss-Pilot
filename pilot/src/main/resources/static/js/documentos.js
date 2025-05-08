@@ -1,9 +1,24 @@
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("formDocumento");
   const tabelaCorpo = document.getElementById("tabelaCorpo");
-
+  const botaoToggle = document.getElementById("btnMostrarUpload");
   const csrfToken = window.csrfToken || '';
   const csrfHeader = window.csrfHeader || '';
+  const barraPesquisa = document.getElementById("barraPesquisa");
+  const filtroStatus = document.getElementById("filtroStatus");
+  const btnLimparFiltros = document.getElementById("btnLimparFiltros");
+
+  let documentosGlobais = [];
+
+  botaoToggle.addEventListener("click", () => {
+    const aberto = form.classList.contains("ativo");
+    form.classList.toggle("ativo");
+    botaoToggle.textContent = aberto ? "Adicionar Arquivo" : "Fechar Formulário";
+    if (!aberto) {
+      const offsetTop = form.getBoundingClientRect().top + window.scrollY - 280;
+      window.scrollTo({ top: offsetTop, behavior: "smooth" });
+    }
+  });
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -34,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Documento enviado com sucesso!");
         form.reset();
         document.getElementById("arquivoSelecionado").textContent = "Nenhum arquivo selecionado";
-        carregarDocumentos();
+        await carregarDocumentos();
       } else {
         alert("Erro ao enviar documento.");
       }
@@ -48,28 +63,43 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       const response = await fetch("/api/documentos/usuario/meus");
       const documentos = await response.json();
-
       if (!Array.isArray(documentos)) throw new Error("Resposta inesperada: documentos não são uma lista.");
-
-      tabelaCorpo.innerHTML = "";
-      documentos.forEach(doc => {
-        const statusFormatado = doc.status.charAt(0).toUpperCase() + doc.status.slice(1).toLowerCase();
-        const classeStatus = doc.status.toLowerCase().replace(/\s/g, '-'); // ex: 'prestes a vencer' → 'prestes-a-vencer'
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${doc.nomeArquivo}</td>
-          <td>${formatarData(doc.dataExpiracao)}</td>
-          <td><span class="status ${classeStatus}">${statusFormatado}</span></td>
-          <td>
-            <button class="acao editar" onclick='abrirModalEdicao(${JSON.stringify(doc)})'>Editar</button>
-          </td>
-        `;
-        tabelaCorpo.appendChild(tr);
-      });
+      documentosGlobais = documentos;
+      aplicarFiltros();
     } catch (error) {
       console.error("Erro ao carregar documentos:", error);
     }
+  }
+
+  function aplicarFiltros() {
+    const termo = barraPesquisa.value.toLowerCase().trim();
+    const statusFiltro = filtroStatus.value;
+
+    const filtrados = documentosGlobais.filter(doc => {
+      const nomeOK = !termo || doc.nomeArquivo.toLowerCase().includes(termo);
+      const statusClasse = doc.status.toLowerCase().replace(/\s/g, "-");
+      const statusOK = !statusFiltro || statusClasse === statusFiltro;
+      return nomeOK && statusOK;
+    });
+
+    renderizarTabela(filtrados);
+  }
+
+  function renderizarTabela(lista) {
+    tabelaCorpo.innerHTML = "";
+    lista.forEach(doc => {
+      const statusFormatado = doc.status.charAt(0).toUpperCase() + doc.status.slice(1).toLowerCase();
+      const classeStatus = doc.status.toLowerCase().replace(/\s/g, '-');
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${doc.nomeArquivo}</td>
+        <td>${formatarData(doc.dataExpiracao)}</td>
+        <td><span class="status ${classeStatus}">${statusFormatado}</span></td>
+        <td><button class="acao editar" onclick='abrirModalEdicao(${JSON.stringify(doc)})'>Editar</button></td>
+      `;
+      tabelaCorpo.appendChild(tr);
+    });
   }
 
   function formatarData(dataISO) {
@@ -126,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.ok) {
           modal.classList.remove("mostrar");
           setTimeout(() => modal.style.display = "none", 300);
-          carregarDocumentos();
+          await carregarDocumentos();
         } else {
           alert("Erro ao atualizar a data.");
         }
@@ -150,7 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.ok) {
           modal.classList.remove("mostrar");
           setTimeout(() => modal.style.display = "none", 300);
-          carregarDocumentos();
+          await carregarDocumentos();
         } else {
           alert("Erro ao excluir documento.");
         }
@@ -160,13 +190,19 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   };
 
-  document.getElementById("btnMostrarUpload").addEventListener("click", () => {
-    document.getElementById("formDocumento").style.display = "flex";
-  });
-
   document.getElementById("arquivo").addEventListener("change", function () {
     const nome = this.files.length > 0 ? this.files[0].name : "Nenhum arquivo selecionado";
     document.getElementById("arquivoSelecionado").textContent = nome;
+  });
+
+  // Filtros e Pesquisa
+  barraPesquisa.addEventListener("input", aplicarFiltros);
+  filtroStatus.addEventListener("change", aplicarFiltros);
+
+  btnLimparFiltros.addEventListener("click", () => {
+    barraPesquisa.value = "";
+    filtroStatus.value = "";
+    aplicarFiltros();
   });
 
   carregarDocumentos();
