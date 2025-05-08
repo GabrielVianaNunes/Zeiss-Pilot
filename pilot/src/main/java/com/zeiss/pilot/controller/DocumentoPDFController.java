@@ -63,10 +63,13 @@ public class DocumentoPDFController {
     }
 
     @GetMapping("/usuario/meus")
-    public List<DocumentoPDFDTO> listarMeusDocumentos() {
+    public List<DocumentoPDFDTO> listarMeusDocumentos(
+        @RequestParam(required = false) String status,
+        @RequestParam(required = false) String nome
+    ) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario usuario = usuarioService.buscarPorEmail(email);
-        return service.listarPorUsuario(usuario.getId());
+        return service.listarPorUsuarioComFiltro(usuario.getId(), status, nome);
     }
 
 }

@@ -8,8 +8,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const filtroStatus = document.getElementById("filtroStatus");
   const btnLimparFiltros = document.getElementById("btnLimparFiltros");
 
-  let documentosGlobais = [];
-
   botaoToggle.addEventListener("click", () => {
     const aberto = form.classList.contains("ativo");
     form.classList.toggle("ativo");
@@ -49,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Documento enviado com sucesso!");
         form.reset();
         document.getElementById("arquivoSelecionado").textContent = "Nenhum arquivo selecionado";
-        await carregarDocumentos();
+        await aplicarFiltros(); // recarrega com filtros aplicados
       } else {
         alert("Erro ao enviar documento.");
       }
@@ -59,30 +57,22 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  async function carregarDocumentos() {
+  async function aplicarFiltros() {
+    const termo = barraPesquisa.value.trim();
+    const status = filtroStatus.value;
+
+    const params = new URLSearchParams();
+    if (termo) params.append("nome", termo);
+    if (status) params.append("status", status);
+
     try {
-      const response = await fetch("/api/documentos/usuario/meus");
+      const response = await fetch(`/api/documentos/usuario/meus?${params.toString()}`);
       const documentos = await response.json();
       if (!Array.isArray(documentos)) throw new Error("Resposta inesperada: documentos não são uma lista.");
-      documentosGlobais = documentos;
-      aplicarFiltros();
+      renderizarTabela(documentos);
     } catch (error) {
-      console.error("Erro ao carregar documentos:", error);
+      console.error("Erro ao aplicar filtros:", error);
     }
-  }
-
-  function aplicarFiltros() {
-    const termo = barraPesquisa.value.toLowerCase().trim();
-    const statusFiltro = filtroStatus.value;
-
-    const filtrados = documentosGlobais.filter(doc => {
-      const nomeOK = !termo || doc.nomeArquivo.toLowerCase().includes(termo);
-      const statusClasse = doc.status.toLowerCase().replace(/\s/g, "-");
-      const statusOK = !statusFiltro || statusClasse === statusFiltro;
-      return nomeOK && statusOK;
-    });
-
-    renderizarTabela(filtrados);
   }
 
   function renderizarTabela(lista) {
@@ -156,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.ok) {
           modal.classList.remove("mostrar");
           setTimeout(() => modal.style.display = "none", 300);
-          await carregarDocumentos();
+          await aplicarFiltros();
         } else {
           alert("Erro ao atualizar a data.");
         }
@@ -180,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.ok) {
           modal.classList.remove("mostrar");
           setTimeout(() => modal.style.display = "none", 300);
-          await carregarDocumentos();
+          await aplicarFiltros();
         } else {
           alert("Erro ao excluir documento.");
         }
@@ -195,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("arquivoSelecionado").textContent = nome;
   });
 
-  // Filtros e Pesquisa
+  // Eventos de filtros
   barraPesquisa.addEventListener("input", aplicarFiltros);
   filtroStatus.addEventListener("change", aplicarFiltros);
 
@@ -205,5 +195,5 @@ document.addEventListener("DOMContentLoaded", function () {
     aplicarFiltros();
   });
 
-  carregarDocumentos();
+  aplicarFiltros();
 });

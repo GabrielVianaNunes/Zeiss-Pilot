@@ -22,7 +22,7 @@
 
     <!-- Formulário de Upload -->
     <!-- Botão que ativa o componente -->
-    <button id="btnMostrarUpload" type="button" style="margin: 0 auto 20px; display: block;">Adicionar Arquivo</button>
+    <button id="btnMostrarUpload" class="btn-cadastrar limpar" type="button" style="margin: 0 auto 20px; display: block;">Adicionar Arquivo</button>
 
     <!-- Formulário de Upload com visual customizado -->
     <form id="formDocumento">
@@ -58,35 +58,34 @@
     <button type="submit" class="botao-upload">Enviar Documento</button>
     </form>
 
-    <!-- Bloco de Pesquisa e Filtros -->
-  <div class="pesquisa-container">
-    <input checked class="pesquisa-checkbox" type="checkbox">
-    <div class="pesquisa-box">
-      <div class="pesquisa-icon-container">
-        <!-- ícone lupa -->
-        <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="pesquisa-icon">
-          <path d="..."></path>
-        </svg>
+    <div class="pesquisa-container">
+      <input type="checkbox" class="pesquisa-checkbox" />
+      <div class="pesquisa-box">
+        <div class="pesquisa-icon-container">
+          <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="pesquisa-icon">
+            <path d="M505 442.7l-99.7-99.7C429.8 305.9 448 259.8 448 208 448 93.1 354.9 0 240 0S32 93.1 32 208s93.1 208 208 208c51.8 0 99-18.2 135-48.7l99.7 99.7c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3zM240 368c-88.4 0-160-71.6-160-160S151.6 48 240 48s160 71.6 160 160-71.6 160-160 160z"></path>
+          </svg>
+        </div>
+        <input type="text" class="pesquisa-input" id="barraPesquisa" placeholder="Pesquisar documento..." />
       </div>
-      <input class="pesquisa-input" id="barraPesquisa" placeholder="Pesquisar nome do arquivo..." type="text">
+    </div>  
+
+    <div class="filtros">
+      <label for="filtroStatus">Status:</label>
+      <select id="filtroStatus">
+        <option value="">Todos</option>
+        <option value="ativo">Ativo</option>
+        <option value="prestes-a-vencer">Prestes a Vencer</option>
+        <option value="expirado">Expirado</option>
+      </select>
+
+      <div class="limpar-container">
+        <button id="btnLimparFiltros" class="btn-cadastrar limpar">Limpar Filtros</button>
+      </div>
     </div>
-  </div>
-
-  <div class="filtros">
-    <label for="filtroStatus">Status:</label>
-    <select id="filtroStatus">
-      <option value="">Todos</option>
-      <option value="ativo">Ativo</option>
-      <option value="prestes-a-vencer">Prestes a Vencer</option>
-      <option value="expirado">Expirado</option>
-    </select>
-
-    <button id="btnLimparFiltros" class="btn-cadastrar limpar">Limpar Filtros</button>
-  </div>
 
     <!-- Tabela de Documentos -->
     <section id="listaDocumentos">
-      <h3>Documentos Cadastrados</h3>
       <table>
         <thead>
           <tr>

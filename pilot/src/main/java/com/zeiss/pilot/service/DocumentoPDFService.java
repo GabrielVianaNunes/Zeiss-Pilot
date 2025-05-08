@@ -106,4 +106,28 @@ public class DocumentoPDFService {
         dto.setUsuarioId(doc.getUsuario().getId());
         return dto;
     }
+
+    public List<DocumentoPDFDTO> listarPorUsuarioComFiltro(Long usuarioId, String status, String nome) {
+        List<DocumentoPDF> documentos = documentoRepository.findByUsuarioId(usuarioId);
+    
+        return documentos.stream()
+            .peek(doc -> doc.setStatus(calcularStatus(doc.getDataExpiracao())))
+            .filter(doc -> {
+                boolean statusOK = true;
+                if (status != null && !status.isBlank()) {
+                    String statusParam = status.replace("-", " ").toLowerCase();
+                    statusOK = doc.getStatus().equalsIgnoreCase(statusParam);
+                }
+    
+                boolean nomeOK = true;
+                if (nome != null && !nome.isBlank()) {
+                    nomeOK = doc.getNomeArquivo().toLowerCase().contains(nome.toLowerCase());
+                }
+    
+                return statusOK && nomeOK;
+            })
+            .map(this::toDTO)
+            .collect(Collectors.toList());
+    }    
+    
 }
