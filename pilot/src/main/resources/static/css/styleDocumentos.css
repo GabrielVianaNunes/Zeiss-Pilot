@@ -56,9 +56,9 @@
     margin-top: 160px;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 50px;
-    padding: 20px;
-    max-width: 1100px;
+    margin-bottom: 20px;
+    padding: 30px;
+    width: 800px;
     margin-left: auto;
     margin-right: auto;
     background-color: #ffffff;
@@ -70,18 +70,41 @@
     text-align: center;
     margin-bottom: 20px;
   }
-
-  .container h3 {
-    text-align: center;
-    margin-bottom: 10px;
-  }
   
-  /* Formulário */
-  form#formDocumento {
+  #formDocumento {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 30px;
+    align-items: center;
+    gap: 20px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    visibility: hidden;
+    transition: max-height 0.5s ease, opacity 0.3s ease, visibility 0.3s ease;
+  }
+  
+  #formDocumento.ativo {
+    max-height: 1000px;
+    opacity: 1;
+    pointer-events: all;
+    visibility: visible;
+  }  
+  
+  #btnMostrarUpload {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    margin: 0 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    background-color: #007bff;
+    transition: background-color 0.3s ease;
+  }
+  
+  #btnMostrarUpload:hover { 
+    background-color: #005eff;
   }
   
   form#formDocumento label {
@@ -90,22 +113,40 @@
   
   form#formDocumento input,
   form#formDocumento button {
-    padding: 10px;
+    padding: 7px;
     font-size: 1rem;
     border-radius: 5px;
     border: 1px solid #ccc;
   }
   
   form#formDocumento button {
-    background-color: #0056b3;
-    color: white;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
     cursor: pointer;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    background-color: #007bff;
     transition: background-color 0.3s ease;
   }
   
   form#formDocumento button:hover {
-    background-color: #003d80; 
+    background-color: #005eff;
   }
+  
+  /* Campo de data lado a lado */
+  .campo-data {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .campo-data label {
+    white-space: nowrap;
+  }  
   
   /* Tabela */
   table {
@@ -158,9 +199,9 @@
     background-color: #d9534f;
     color: white;
   }
-  
-  /* Rodapé */
+
   .rodape {
+    margin-top: auto; 
     background: #fff;
     color: rgb(28, 9, 201);
     padding: 20px;
@@ -170,7 +211,7 @@
     border-top: 1px solid #ddd;
     animation: fadeInRodape 1.5s ease-in;
     box-shadow: 0 2px 7px rgba(0,0,0,0.2);
-  }
+  }  
   
   .rodape h3 {
     margin-bottom: 10px;
@@ -321,10 +362,6 @@
   text-align: center;
 }
 
-.modal-content h3 {
-  margin-bottom: 20px;
-}
-
 .modal-content input[type="date"] {
   padding: 8px;
   width: 100%;
@@ -385,4 +422,144 @@
 .status.desconhecido {
   color: #383d41;
   background-color: #e2e3e5;
+}
+
+.pesquisa-container {
+  position: relative;
+  box-sizing: border-box;
+  width: fit-content;
+  margin: 0 auto 20px auto;
+}
+
+.pesquisa-box {
+  position: relative;
+  width: 230px;
+  height: 30px;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: center;
+  border-radius: 160px;
+  background-color: #e6e6e6;
+  transition: all 0.3s ease;
+}
+
+.pesquisa-checkbox {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  right: 17px;
+  top: 10px;
+  z-index: 9;
+  cursor: pointer;
+  appearance: none;
+}
+
+.pesquisa-checkbox:checked ~ .pesquisa-box {
+  width: 50px;
+}
+
+.pesquisa-checkbox:checked ~ .pesquisa-box .pesquisa-input {
+  width: 0;
+  height: 0px;
+}
+
+.pesquisa-checkbox:checked ~ .pesquisa-box .pesquisa-icon-container {
+  padding-right: 8px;
+}
+
+.pesquisa-input {
+  height: 100%;
+  width: 170px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  padding-bottom: 2px;
+  padding-left: 10px;
+  font-size: 15px;
+  color: rgb(10, 10, 10);
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.pesquisa-input::placeholder {
+  color: rgba(0, 0, 0, 0.776);
+}
+
+.pesquisa-icon-container {
+  padding-top: 5px;
+  width: fit-content;
+  transition: all 0.3s ease;
+}
+
+.pesquisa-icon {
+  fill: rgb(0, 0, 0);
+  font-size: 1.3em;
+}
+
+.filtros {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 12px 20px;
+  max-width: 1100px;
+  margin: 0 auto 30px auto; 
+  background-color: #eaf4ff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}  
+
+.filtros .limpar {
+  margin-left: auto;
+  padding: 5px;
+  font-size: 0.9rem;
+  background-color: #babbbc;
+  color: white;
+}
+
+.filtros .limpar:hover {
+  background-color: #9b9b9b;
+}  
+
+.filtros label {
+  font-weight: 200;
+  margin-right: 4px;
+  font-size: 15px;
+  color: #333;
+}
+
+.filtros select {
+  padding: 5px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  min-width: 170px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.filtros select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+}  
+
+.btn-cadastrar {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btn-cadastrar:hover {
+  background-color: #004494;
+  transform: scale(1.02);
 }
