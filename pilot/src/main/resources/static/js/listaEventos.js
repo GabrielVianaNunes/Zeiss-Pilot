@@ -138,11 +138,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const url = eventoId ? `/eventos/api/${eventoId}` : "/eventos/api";
         const method = eventoId ? "PUT" : "POST";
 
+        const csrfMetaToken = document.querySelector('meta[name="_csrf"]');
+        const csrfMetaHeader = document.querySelector('meta[name="_csrf_header"]');
+
+        const csrfToken = csrfMetaToken ? csrfMetaToken.getAttribute("content") : "";
+        const csrfHeader = csrfMetaHeader ? csrfMetaHeader.getAttribute("content") : "";
+
         fetch(url, {
             method: method,
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...(csrfHeader && csrfToken ? { [csrfHeader]: csrfToken } : {})
+            },
             body: JSON.stringify(eventoData)
         })
+
             .then(() => {
                 modal.style.display = "none";
                 carregarEventos();

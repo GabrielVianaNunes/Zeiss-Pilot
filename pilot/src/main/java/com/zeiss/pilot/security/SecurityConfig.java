@@ -26,6 +26,7 @@ public class SecurityConfig {
                 .requestMatchers("/usuarios/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/documentos").hasRole("ADMIN")
                 .requestMatchers("/api/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/eventos/api").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

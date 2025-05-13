@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lista de Eventos</title>
+  
+  <!-- CSRF token enviado pelo Spring -->
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
   <link rel="stylesheet" type="text/css" href="/css/styleListaEventos.css">
 </head>
+
 <body>
 
   <!-- Cabeçalho -->
