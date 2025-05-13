@@ -20,7 +20,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.zeiss.pilot.dto.DocumentoPDFDTO;
@@ -151,7 +153,7 @@ public class DocumentoPDFService {
     
     public Page<DocumentoPDFDTO> listarPorUsuarioComFiltroPaginado(Long usuarioId, String status, String nome, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        String statusFiltro = (status == null || status.isEmpty()) ? "" : status.toLowerCase();
+        String statusFiltro = (status == null || status.isEmpty()) ? "" : status.replace("-", " ").toLowerCase();
         String nomeFiltro = (nome == null || nome.isEmpty()) ? "" : nome.toLowerCase();
 
         Page<DocumentoPDF> documentos = documentoRepository
@@ -167,4 +169,21 @@ public class DocumentoPDFService {
         });
 
     }
+
+    @Scheduled(cron = "0 0 14 * * *") // Todos os dias às 14h
+    @Transactional
+    public void atualizarStatusTodosOsDocumentos() {
+        List<DocumentoPDF> documentos = documentoRepository.findAll();
+
+        for (DocumentoPDF doc : documentos) {
+            String novoStatus = calcularStatus(doc.getDataExpiracao());
+            if (!novoStatus.equalsIgnoreCase(doc.getStatus())) {
+                doc.setStatus(novoStatus);
+                documentoRepository.save(doc);
+            }
+        }
+
+        System.out.println("[AGENDADO] Verificação e atualização de status concluída às 14h.");
+    }
+
 }
