@@ -7,6 +7,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const barraPesquisa = document.getElementById("barraPesquisa");
   const filtroStatus = document.getElementById("filtroStatus");
   const btnLimparFiltros = document.getElementById("btnLimparFiltros");
+  const btnAnterior = document.getElementById("btnAnterior");
+  const btnProximo = document.getElementById("btnProximo");
+  const spanPaginaAtual = document.getElementById("paginaAtual");
+
+  let paginaAtual = 0;
+  const tamanhoPagina = 10;
+  let totalPaginas = 1;
 
   botaoToggle.addEventListener("click", () => {
     const aberto = form.classList.contains("ativo");
@@ -47,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Documento enviado com sucesso!");
         form.reset();
         document.getElementById("arquivoSelecionado").textContent = "Nenhum arquivo selecionado";
-        await aplicarFiltros(); // recarrega com filtros aplicados
+        await aplicarFiltros(); // recarrega
       } else {
         alert("Erro ao enviar documento.");
       }
@@ -64,12 +71,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const params = new URLSearchParams();
     if (termo) params.append("nome", termo);
     if (status) params.append("status", status);
+    params.append("page", paginaAtual);
+    params.append("size", tamanhoPagina);
 
     try {
       const response = await fetch(`/api/documentos/usuario/meus?${params.toString()}`);
-      const documentos = await response.json();
-      if (!Array.isArray(documentos)) throw new Error("Resposta inesperada: documentos não são uma lista.");
-      renderizarTabela(documentos);
+      const page = await response.json();
+
+      if (!page || !Array.isArray(page.content)) throw new Error("Resposta inválida");
+
+      renderizarTabela(page.content);
+      totalPaginas = page.totalPages;
+      atualizarControlesPaginacao();
     } catch (error) {
       console.error("Erro ao aplicar filtros:", error);
     }
@@ -93,9 +106,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  function atualizarControlesPaginacao() {
+    spanPaginaAtual.textContent = (paginaAtual + 1);
+    btnAnterior.disabled = paginaAtual === 0;
+    btnProximo.disabled = paginaAtual >= totalPaginas - 1;
+  }
+
+  btnAnterior.addEventListener("click", () => {
+    if (paginaAtual > 0) {
+      paginaAtual--;
+      aplicarFiltros();
+    }
+  });
+
+  btnProximo.addEventListener("click", () => {
+    if (paginaAtual < totalPaginas - 1) {
+      paginaAtual++;
+      aplicarFiltros();
+    }
+  });
+
   window.abrirPDF = function(id) {
     window.open(`/api/documentos/abrir/${id}`, '_blank');
-  }  
+  };
 
   function formatarData(dataISO) {
     const [ano, mes, dia] = dataISO.split("-");
@@ -151,7 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.ok) {
           modal.classList.remove("mostrar");
           setTimeout(() => modal.style.display = "none", 300);
-          await aplicarFiltros();
+          aplicarFiltros();
         } else {
           alert("Erro ao atualizar a data.");
         }
@@ -175,7 +208,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.ok) {
           modal.classList.remove("mostrar");
           setTimeout(() => modal.style.display = "none", 300);
-          await aplicarFiltros();
+          aplicarFiltros();
         } else {
           alert("Erro ao excluir documento.");
         }
@@ -190,13 +223,20 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("arquivoSelecionado").textContent = nome;
   });
 
-  // Eventos de filtros
-  barraPesquisa.addEventListener("input", aplicarFiltros);
-  filtroStatus.addEventListener("change", aplicarFiltros);
+  barraPesquisa.addEventListener("input", () => {
+    paginaAtual = 0;
+    aplicarFiltros();
+  });
+
+  filtroStatus.addEventListener("change", () => {
+    paginaAtual = 0;
+    aplicarFiltros();
+  });
 
   btnLimparFiltros.addEventListener("click", () => {
     barraPesquisa.value = "";
     filtroStatus.value = "";
+    paginaAtual = 0;
     aplicarFiltros();
   });
 

@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -145,5 +148,23 @@ public class DocumentoPDFService {
             .contentType(MediaType.APPLICATION_PDF)
             .body(resource);
     }
+    
+    public Page<DocumentoPDFDTO> listarPorUsuarioComFiltroPaginado(Long usuarioId, String status, String nome, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        String statusFiltro = (status == null || status.isEmpty()) ? "" : status.toLowerCase();
+        String nomeFiltro = (nome == null || nome.isEmpty()) ? "" : nome.toLowerCase();
 
+        Page<DocumentoPDF> documentos = documentoRepository
+            .findByUsuarioIdAndStatusIgnoreCaseContainingAndNomeArquivoIgnoreCaseContaining(usuarioId, statusFiltro, nomeFiltro, pageable);
+
+        return documentos.map(doc -> {
+            String statusRecalculado = calcularStatus(doc.getDataExpiracao());
+            if (!statusRecalculado.equalsIgnoreCase(doc.getStatus())) {
+                doc.setStatus(statusRecalculado);
+                documentoRepository.save(doc); 
+            }
+            return toDTO(doc);
+        });
+
+    }
 }
