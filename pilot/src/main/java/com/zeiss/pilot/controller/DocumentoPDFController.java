@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,13 +66,20 @@ public class DocumentoPDFController {
     }
 
     @GetMapping("/usuario/meus")
-    public List<DocumentoPDFDTO> listarMeusDocumentos(
+    public Page<DocumentoPDFDTO> listarMeusDocumentos(
         @RequestParam(required = false) String status,
-        @RequestParam(required = false) String nome
+        @RequestParam(required = false) String nome,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
     ) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario usuario = usuarioService.buscarPorEmail(email);
-        return service.listarPorUsuarioComFiltro(usuario.getId(), status, nome);
+        return service.listarPorUsuarioComFiltroPaginado(usuario.getId(), status, nome, page, size);
+    }
+
+    @GetMapping("/abrir/{id}")
+    public ResponseEntity<Resource> abrirDocumento(@PathVariable Long id) {
+        return service.abrirDocumentoComoResource(id);
     }
 
 }

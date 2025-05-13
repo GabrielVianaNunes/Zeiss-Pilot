@@ -12,6 +12,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,7 +53,7 @@ public class DocumentoPDFService {
         doc.setCaminhoArquivo(caminhoFinal);
         doc.setDataExpiracao(dataExpiracao);
         doc.setDataUpload(LocalDateTime.now());
-        doc.setStatus(calcularStatus(dataExpiracao)); // ✅ calcula status correto
+        doc.setStatus(calcularStatus(dataExpiracao));
         doc.setUsuario(usuario);
 
         DocumentoPDF salvo = documentoRepository.save(doc);
@@ -130,4 +138,33 @@ public class DocumentoPDFService {
             .collect(Collectors.toList());
     }    
     
+    public ResponseEntity<Resource> abrirDocumentoComoResource(Long id) {
+        DocumentoPDF doc = documentoRepository.findById(id).orElseThrow();
+        Path path = Paths.get(doc.getCaminhoArquivo());
+        Resource resource = new FileSystemResource(path);
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + doc.getNomeArquivo() + "\"")
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(resource);
+    }
+    
+    public Page<DocumentoPDFDTO> listarPorUsuarioComFiltroPaginado(Long usuarioId, String status, String nome, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        String statusFiltro = (status == null || status.isEmpty()) ? "" : status.toLowerCase();
+        String nomeFiltro = (nome == null || nome.isEmpty()) ? "" : nome.toLowerCase();
+
+        Page<DocumentoPDF> documentos = documentoRepository
+            .findByUsuarioIdAndStatusIgnoreCaseContainingAndNomeArquivoIgnoreCaseContaining(usuarioId, statusFiltro, nomeFiltro, pageable);
+
+        return documentos.map(doc -> {
+            String statusRecalculado = calcularStatus(doc.getDataExpiracao());
+            if (!statusRecalculado.equalsIgnoreCase(doc.getStatus())) {
+                doc.setStatus(statusRecalculado);
+                documentoRepository.save(doc); 
+            }
+            return toDTO(doc);
+        });
+
+    }
 }
