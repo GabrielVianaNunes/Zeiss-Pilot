@@ -81,7 +81,6 @@ document.addEventListener('DOMContentLoaded', function() {
             renderizarPaginaAtual();
         } catch (error) {
             console.error('Erro:', error);
-            // Removida a chamada para mostrarErro
         }
     }
 
@@ -121,11 +120,15 @@ document.addEventListener('DOMContentLoaded', function() {
             abrirModal();
         } catch (error) {
             console.error('Erro:', error);
-            // Removida a chamada para mostrarErro
         }
     }
 
     async function salvarEdital() {
+        // Valida o formulário antes de enviar
+        if (!validarFormulario()) {
+            return;
+        }
+
         const formData = getFormData();
         const btnSalvar = document.getElementById('btnSalvar');
         const btnTextoOriginal = btnSalvar.textContent;
@@ -155,10 +158,8 @@ document.addEventListener('DOMContentLoaded', function() {
             await response.json();
             fecharModal();
             carregarTodosEditais();
-            // Removida a chamada para mostrarSucesso
         } catch (error) {
             console.error('Erro:', error);
-            // Removida a chamada para mostrarErro
         } finally {
             btnSalvar.disabled = false;
             btnSalvar.textContent = btnTextoOriginal;
@@ -195,17 +196,15 @@ document.addEventListener('DOMContentLoaded', function() {
             
             fecharModal();
             carregarTodosEditais();
-            // Removida a chamada para mostrarSucesso
         } catch (error) {
             console.error('Erro ao remover edital:', error);
-            // Removida a chamada para mostrarErro
         } finally {
             btnRemover.disabled = false;
             btnRemover.textContent = btnTextoOriginal;
         }
     }
 
-    // Funções auxiliares (mantidas mas não usadas para mensagens)
+    // Funções auxiliares
     function renderizarEditais(editais) {
         const tabela = document.getElementById('tabelaEditais');
         tabela.innerHTML = editais.map(edital => `
@@ -231,15 +230,63 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('observacao').value = edital.observacao || '';
     }
 
+    // Função para sanitizar strings (remover caracteres inválidos)
+    function sanitizarTexto(texto) {
+        if (!texto) return texto;
+        
+        // Permite: letras (incluindo acentuadas), números, espaços, hífens, vírgulas, pontos
+        // e alguns símbolos básicos como @, #, $, etc.
+        return texto.toString()
+                   .replace(/[^a-zA-ZÀ-ÿ0-9\s@#$%&*()_+=\-[\]{};':"\\|,.<>\/?]/g, '')
+                   .replace(/\s+/g, ' ') // Remove múltiplos espaços
+                   .trim(); // Remove espaços no início e fim
+    }
+
+    // Função para validar um campo de texto
+    function validarCampoTexto(campo, nomeCampo) {
+        const valor = campo.value;
+        const sanitizado = sanitizarTexto(valor);
+        
+        if (valor !== sanitizado) {
+            alert(`O campo "${nomeCampo}" contém caracteres inválidos. Serão removidos automaticamente.`);
+            campo.value = sanitizado;
+            return false;
+        }
+        return true;
+    }
+
+    // Função para validar todos os campos antes do envio
+    function validarFormulario() {
+        let valido = true;
+        
+        // Validação para Nome do Edital
+        const nomeEdital = document.getElementById('nomeEdital');
+        valido = validarCampoTexto(nomeEdital, 'Nome do Edital') && valido;
+        
+        // Validação para Instituição Fornecedora
+        const instituicaoFornecedora = document.getElementById('instituicaoFornecedora');
+        valido = validarCampoTexto(instituicaoFornecedora, 'Instituição Fornecedora') && valido;
+        
+        // Validação para Instituição Parceira
+        const instituicaoParceira = document.getElementById('instituicaoParceira');
+        valido = validarCampoTexto(instituicaoParceira, 'Instituição Parceira') && valido;
+        
+        // Validação para Observação
+        const observacao = document.getElementById('observacao');
+        valido = validarCampoTexto(observacao, 'Observação') && valido;
+        
+        return valido;
+    }
+
     function getFormData() {
         return {
             id: document.getElementById('editalId').value ? parseInt(document.getElementById('editalId').value) : null,
-            nomeEdital: document.getElementById('nomeEdital').value,
-            instituicaoFornecedora: document.getElementById('instituicaoFornecedora').value,
-            instituicaoParceira: document.getElementById('instituicaoParceira').value,
+            nomeEdital: sanitizarTexto(document.getElementById('nomeEdital').value),
+            instituicaoFornecedora: sanitizarTexto(document.getElementById('instituicaoFornecedora').value),
+            instituicaoParceira: sanitizarTexto(document.getElementById('instituicaoParceira').value),
             valor: parseFloat(document.getElementById('valor').value.replace(',', '.')),
             status: document.getElementById('status').value,
-            observacao: document.getElementById('observacao').value
+            observacao: sanitizarTexto(document.getElementById('observacao').value)
         };
     }
 
@@ -274,5 +321,22 @@ document.addEventListener('DOMContentLoaded', function() {
         if (parts.length > 2) value = parts[0] + ',' + parts.slice(1).join('');
         if (parts[1] && parts[1].length > 2) value = parts[0] + ',' + parts[1].substring(0, 2);
         e.target.value = value;
+    });
+
+    // Validação em tempo real para campos de texto
+    document.getElementById('nomeEdital').addEventListener('input', function(e) {
+        this.value = sanitizarTexto(this.value);
+    });
+
+    document.getElementById('instituicaoFornecedora').addEventListener('input', function(e) {
+        this.value = sanitizarTexto(this.value);
+    });
+
+    document.getElementById('instituicaoParceira').addEventListener('input', function(e) {
+        this.value = sanitizarTexto(this.value);
+    });
+
+    document.getElementById('observacao').addEventListener('input', function(e) {
+        this.value = sanitizarTexto(this.value);
     });
 });
