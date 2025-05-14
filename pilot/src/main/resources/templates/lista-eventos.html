@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lista de Eventos</title>
+  
+  <!-- CSRF token enviado pelo Spring -->
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
   <link rel="stylesheet" type="text/css" href="/css/styleListaEventos.css">
 </head>
+
 <body>
 
   <!-- Cabeçalho -->
@@ -35,10 +41,10 @@
         <!-- Os cards dos eventos serão inseridos dinamicamente aqui -->
     </div>  
 
-    <div class="paginacao-container">
-      <button id="btnAnterior" class="paginacao-btn">Anterior</button>
-      <span id="paginacaoInfo">Página 1 de 1</span>
-      <button id="btnProximo" class="paginacao-btn">Próximo</button>
+    <div class="paginacao-container" id="paginacaoContainer">
+      <button id="btnAnterior" class="paginacao" disabled>Anterior</button>
+      <span id="paginaAtual">1</span>
+      <button id="btnProximo" class="paginacao">Próxima</button>
     </div>
     
   </main>

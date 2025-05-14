@@ -52,7 +52,7 @@ public class VisitaTecnicaDTO {
             entity.getLocalVisita(),
             entity.getTelefones(),
             entity.getObservacao(),
-            null // ← `createdAt` não existe na entidade, omitido aqui
+            null // ← createdAt não existe na entidade, omitido aqui
         );
     }
 

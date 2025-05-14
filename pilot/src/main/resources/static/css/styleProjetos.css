@@ -324,29 +324,50 @@ table#tabelaProjetos {
   }  
   
   .paginacao-container {
-    text-align: center;
-    margin-top: 20px;
-  }
-  
-  .paginacao {
-    background-color: #e0e0e0;
-    border: none;
-    color: #333;
-    padding: 8px 16px;
-    margin: 5px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  .paginacao:hover:not(:disabled) {
-    background-color: #d5d5d5;
-  }
-  
-  .paginacao:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 30px 0;
+  flex-wrap: wrap;
+}
+
+.paginacao {
+  padding: 6px 8px;
+  font-size: 0.85rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.paginacao:hover:not(:disabled) {
+  background-color: #004494;
+  transform: scale(1.03);
+}
+
+.paginacao:disabled {
+  background-color: #8b8a8a9c;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+#paginacaoInfo {
+  font-weight: bold;
+}
+
+#paginaAtual {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #007bff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
   
   /* === Botão de Edição/Configuração de Projeto === */
 /* From Uiverse.io by vinodjangid07 */
