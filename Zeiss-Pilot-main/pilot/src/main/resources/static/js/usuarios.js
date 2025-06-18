@@ -109,6 +109,11 @@ function renderizarTabelaPaginada(lista) {
   paginacaoInfo.textContent = `Página ${paginaAtual} de ${totalPaginas}`;
   btnAnterior.disabled = paginaAtual === 1;
   btnProximo.disabled = paginaAtual === totalPaginas;
+
+  const infoSpan = document.getElementById("paginacaoInfo");
+  if (infoSpan) {
+    infoSpan.textContent = "";
+  }
 }
 
 function adicionarLinha(usuario) {
