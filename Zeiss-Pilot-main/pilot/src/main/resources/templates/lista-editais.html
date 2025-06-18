@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <title>Lista de Editais</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" type="text/css" href="/css/styleListaEdital.css">
+</head>
+<body>
+  <header class="cabecalho">
+    <img class="logo" id="imgTopo" src="/img/Logo-Zeiss-Coop-Transparent.png" alt="Logo Zeiss">
+    <img class="logo" id="imgSenai" src="/img/senai-azul.png" alt="Logo Senai">
+  </header>
+  
+  <main class="conteudo">
+    <h1>Lista de Editais</h1> <!-- CABEÇALHO MANTIDO -->
+    <button id="btnCriarEdital" class="btn-criar">Criar Edital</button>
+    
+    <section class="lista-editais">
+      <h2>Editais Cadastrados</h2>
+      <div class="tabela-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Instituição Fornecedora</th>
+              <th>Instituição Parceira</th>
+              <th>Valor (R$)</th>
+              <th>Status</th>
+              <th>Observação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaEditais">
+            <!-- Linhas serão preenchidas via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="paginacao-container">
+        <div class="paginacao">
+            <button id="btnAnterior" class="paginacao-btn paginacao-nav">Anterior</button>
+            
+            <div class="paginacao-numeros" id="paginacaoNumeros">
+                <!-- Números das páginas serão gerados pelo JavaScript -->
+            </div>
+            
+            <button id="btnProxima" class="paginacao-btn paginacao-nav">Próxima</button>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Modal -->
+    <div id="modalEdital" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="modalTitulo">Criar Edital</h2>
+        
+        <form id="formEdital">
+          <input type="hidden" id="editalId" name="id">
+          
+          <div class="form-group">
+            <label for="nomeEdital">Nome do Edital:</label>
+            <input type="text" id="nomeEdital" name="nomeEdital" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="instituicaoFornecedora">Instituição Fornecedora:</label>
+            <input type="text" id="instituicaoFornecedora" name="instituicaoFornecedora" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="instituicaoParceira">Instituição Parceira:</label>
+            <input type="text" id="instituicaoParceira" name="instituicaoParceira">
+          </div>
+          
+          <div class="form-group">
+            <label for="valor">Valor (R$):</label>
+            <input type="text" id="valor" name="valor" 
+                   pattern="^[0-9]+([,.][0-9]{1,2})?$"
+                   title="Digite o valor (ex: 25000 ou 25000,00)"
+                   required>
+          </div>
+          
+          <div class="form-group">
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+              <option value="Aguardando aprovação" selected>Aguardando aprovação</option>
+              <option value="Reprovado">Reprovado</option>
+              <option value="Aprovado">Aprovado</option>
+              <option value="Prestação de contas">Prestação de contas</option>
+              <option value="Finalizado">Finalizado</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="observacao">Observação:</label>
+            <textarea id="observacao" name="observacao" rows="4"></textarea>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" id="btnSalvar" class="btn-salvar">Salvar</button>
+            <button type="button" id="btnRemover" class="btn-remover">Remover</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  
+  <footer class="rodape">
+    <h3>R. Armogaste José da Silveira, 612 - St. Centro Oeste | Goiânia - GO, 74560-550</h3>
+    <h3>CNPJ: 03.783.850/0018-40</h3>
+    <figure>
+      <img class="logo-pequena" src="/img/CentroMetrologia-logo.png" alt="Logo Centro de Metrologia SENAI Zeiss">
+    </figure>
+  </footer>
+  
+  <script src="/js/listaEdital.js"></script>
+</body>
+</html>
