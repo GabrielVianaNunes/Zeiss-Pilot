@@ -23,23 +23,24 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login", "/css/**", "/img/**", "/js/**").permitAll()
+                .requestMatchers("/visitas-tecnicas/api/**").authenticated() // a API exige login
                 .requestMatchers("/usuarios/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/documentos").hasRole("ADMIN")
                 .requestMatchers("/api/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/eventos/api").hasRole("ADMIN")
                 .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
+                )
+                .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/index", true)
                 .failureUrl("/login?error")
                 .permitAll()
-            )
-            .logout(logout -> logout
+                )
+                .logout(logout -> logout
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
-            );
+                );
 
         return http.build();
     }

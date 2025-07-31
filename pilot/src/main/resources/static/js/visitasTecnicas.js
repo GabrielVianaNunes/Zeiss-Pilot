@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute("content");
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
     const btnNovaVisita = document.getElementById("btnNovaVisita");
     const modal = document.getElementById("modalVisita");
     const closeModal = document.querySelector(".close");
@@ -85,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const mes = String(data.getMonth() + 1).padStart(2, '0');
         const ano = data.getFullYear(); // Agora mostra o ano completo
         return `${dia}/${mes}/${ano}`;
-    }    
+    }
 
     function renderizarVisitas() {
         visitasContainer.innerHTML = "";
@@ -170,5 +172,86 @@ document.addEventListener("DOMContentLoaded", () => {
         renderizarPaginacao();
     });
 
+    window.editarVisita = function (id) {
+        const visita = visitas.find(v => v.id === id);
+        if (!visita) return;
+
+        document.getElementById("visitaId").value = visita.id;
+        document.getElementById("responsavel").value = visita.responsavel;
+        document.getElementById("empresa").value = visita.empresaInstituicao;
+        document.getElementById("dataSolicitada").value = visita.dataSolicitada;
+        document.getElementById("dataAgendada").value = visita.dataAgendada;
+        document.getElementById("visitaRealizada").checked = visita.visitaRealizada;
+        document.getElementById("quantidade").value = visita.quantidadeVisitantes;
+        document.getElementById("local").value = visita.localVisita;
+        document.getElementById("telefones").value = visita.telefones;
+        document.getElementById("observacao").value = visita.observacao;
+
+        modal.style.display = "flex";
+        configurarValidacoesCampos();
+    };
+
+    window.deletarVisita = function (id) {
+        if (!confirm("Tem certeza que deseja excluir esta visita?")) return;
+
+        fetch(`/visitas-tecnicas/api/${id}`, {
+            method: "DELETE",
+            headers: {
+                [csrfHeader]: csrfToken
+            }
+        })
+
+
+            .then(res => {
+                if (!res.ok) throw new Error("Erro ao deletar visita");
+                carregarVisitas(); // Atualiza tela
+            })
+            .catch(err => console.error(err));
+    };
+
     carregarVisitas();
+
+    visitaForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const visita = {
+            id: visitaIdInput.value ? parseInt(visitaIdInput.value, 10) : null,
+            responsavel: document.getElementById("responsavel").value,
+            empresaInstituicao: document.getElementById("empresa").value,
+            dataSolicitada: document.getElementById("dataSolicitada").value,
+            dataAgendada: document.getElementById("dataAgendada").value,
+            visitaRealizada: document.getElementById("visitaRealizada").checked,
+            quantidadeVisitantes: parseInt(document.getElementById("quantidade").value, 10),
+            localVisita: document.getElementById("local").value,
+            telefones: document.getElementById("telefones").value,
+            observacao: document.getElementById("observacao").value
+        };
+
+        const metodo = visita.id ? "PUT" : "POST";
+        const url = visita.id
+            ? `/visitas-tecnicas/api/${visita.id}`
+            : `/visitas-tecnicas/api`;
+
+        const headers = {
+            "Content-Type": "application/json",
+            [csrfHeader]: csrfToken
+        };
+
+        fetch(url, {
+            method: metodo,
+            headers,
+            body: JSON.stringify(visita)
+        })
+
+            .then(res => {
+                if (!res.ok) throw new Error("Erro ao salvar visita");
+                return res.json();
+            })
+            .then(() => {
+                modal.style.display = "none";
+                carregarVisitas(); // Atualiza a tela
+            })
+            .catch(err => console.error(err));
+    });
+
 });
