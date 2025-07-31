@@ -234,10 +234,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function sanitizarTexto(texto) {
         if (!texto) return texto;
         
-        // Permite: letras (incluindo acentuadas), números, espaços, hífens, vírgulas, pontos
-        // e alguns símbolos básicos como @, #, $, etc.
+        // Permite: letras (incluindo acentuadas), números, espaços, hífens, vírgulas e pontos
         return texto.toString()
-                   .replace(/[^a-zA-ZÀ-ÿ0-9\s@#$%&*()_+=\-[\]{};':"\\|,.<>\/?]/g, '')
+                   .replace(/[^a-zA-ZÀ-ÿ0-9\s-,.]/g, '') // Remove caracteres não permitidos
                    .replace(/\s+/g, ' ') // Remove múltiplos espaços
                    .trim(); // Remove espaços no início e fim
     }
@@ -265,6 +264,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Validação para Instituição Fornecedora
         const instituicaoFornecedora = document.getElementById('instituicaoFornecedora');
+        if (!instituicaoFornecedora.value.trim()) {
+            alert('O campo "Instituição Fornecedora" é obrigatório.');
+            return false;
+        }
         valido = validarCampoTexto(instituicaoFornecedora, 'Instituição Fornecedora') && valido;
         
         // Validação para Instituição Parceira
