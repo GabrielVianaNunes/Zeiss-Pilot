@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute("content");
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
     const btnNovaVisita = document.getElementById("btnNovaVisita");
     const modal = document.getElementById("modalVisita");
     const closeModal = document.querySelector(".close");
@@ -10,12 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const visitasPorPagina = 6;
     let paginaAtual = 1;
     let visitas = [];
-
-    function configurarMinimaDataHoje() {
-        const hoje = new Date().toISOString().split("T")[0];
-        document.getElementById("dataSolicitada").setAttribute("min", hoje);
-        document.getElementById("dataAgendada").setAttribute("min", hoje);
-    }
+    let visitasFiltradas = [];
 
     function configurarValidacoesCampos() {
         const campoResponsavel = document.getElementById("responsavel");
@@ -63,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
         modal.style.display = "flex";
         visitaForm.reset();
         visitaIdInput.value = "";
-        configurarMinimaDataHoje();
         configurarValidacoesCampos();
     };
 
@@ -77,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(response => response.json())
             .then(data => {
                 visitas = data;
+                visitasFiltradas = visitas;
                 paginaAtual = 1;
                 renderizarVisitas();
                 renderizarPaginacao();
@@ -84,20 +81,30 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(error => console.error("Erro ao carregar visitas:", error));
     }
 
+    function formatarData(dataIso) {
+        const data = new Date(dataIso);
+        const dia = String(data.getDate()).padStart(2, '0');
+        const mes = String(data.getMonth() + 1).padStart(2, '0');
+        const ano = data.getFullYear(); // Agora mostra o ano completo
+        return `${dia}/${mes}/${ano}`;
+    }
+
     function renderizarVisitas() {
         visitasContainer.innerHTML = "";
         const inicio = (paginaAtual - 1) * visitasPorPagina;
         const fim = inicio + visitasPorPagina;
-        const visitasPagina = visitas.slice(inicio, fim);
+        const visitasPagina = visitasFiltradas.slice(inicio, fim);
 
         visitasPagina.forEach(visita => {
             const card = document.createElement("div");
             card.classList.add("visita-card");
 
+            const dataFormatada = formatarData(visita.dataSolicitada);
+
             card.innerHTML = `
                 <h3>${visita.responsavel}</h3>
                 <p><strong>Empresa:</strong> ${visita.empresaInstituicao}</p>
-                <p><strong>Data:</strong> ${visita.dataSolicitada}</p>
+                <p><strong>Data:</strong> ${dataFormatada}</p>
                 <p><strong>Local:</strong> ${visita.localVisita}</p>
                 <button class="btn-edit" onclick="editarVisita(${visita.id})">Editar</button>
                 <button class="btn-delete" onclick="deletarVisita(${visita.id})">Excluir</button>
@@ -115,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         paginacao.innerHTML = "";
-        const totalPaginas = Math.ceil(visitas.length / visitasPorPagina);
+        const totalPaginas = Math.ceil(visitasFiltradas.length / visitasPorPagina);
 
         const btnAnterior = document.createElement("button");
         btnAnterior.textContent = "Anterior";
@@ -149,18 +156,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     campoPesquisa.addEventListener("input", () => {
         const termo = campoPesquisa.value.toLowerCase();
-        const visitasFiltradas = visitas.filter(visita =>
-            visita.responsavel.toLowerCase().includes(termo) ||
-            visita.empresaInstituicao.toLowerCase().includes(termo) ||
-            visita.localVisita.toLowerCase().includes(termo)
-        );
+
+        if (termo === "") {
+            visitasFiltradas = visitas;
+        } else {
+            visitasFiltradas = visitas.filter(visita =>
+                visita.responsavel.toLowerCase().includes(termo) ||
+                visita.empresaInstituicao.toLowerCase().includes(termo) ||
+                visita.localVisita.toLowerCase().includes(termo)
+            );
+        }
+
         paginaAtual = 1;
-        visitas = visitasFiltradas;
         renderizarVisitas();
         renderizarPaginacao();
     });
 
-    window.editarVisita = function(id) {
+    window.editarVisita = function (id) {
         const visita = visitas.find(v => v.id === id);
         if (!visita) return;
 
@@ -168,63 +180,78 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("responsavel").value = visita.responsavel;
         document.getElementById("empresa").value = visita.empresaInstituicao;
         document.getElementById("dataSolicitada").value = visita.dataSolicitada;
-        document.getElementById("dataAgendada").value = visita.dataAgendada || "";
-        document.getElementById("visitaRealizada").value = visita.visitaRealizada ? "true" : "false";
+        document.getElementById("dataAgendada").value = visita.dataAgendada;
+        document.getElementById("visitaRealizada").checked = visita.visitaRealizada;
         document.getElementById("quantidade").value = visita.quantidadeVisitantes;
         document.getElementById("local").value = visita.localVisita;
         document.getElementById("telefones").value = visita.telefones;
         document.getElementById("observacao").value = visita.observacao;
 
         modal.style.display = "flex";
-        configurarMinimaDataHoje();
         configurarValidacoesCampos();
     };
 
-    window.deletarVisita = function(id) {
-        if (confirm("Tem certeza que deseja excluir esta visita?")) {
-            fetch(`/visitas-tecnicas/api/${id}`, { method: "DELETE" })
-                .then(() => carregarVisitas())
-                .catch(error => console.error("Erro ao excluir:", error));
-        }
+    window.deletarVisita = function (id) {
+        if (!confirm("Tem certeza que deseja excluir esta visita?")) return;
+
+        fetch(`/visitas-tecnicas/api/${id}`, {
+            method: "DELETE",
+            headers: {
+                [csrfHeader]: csrfToken
+            }
+        })
+
+
+            .then(res => {
+                if (!res.ok) throw new Error("Erro ao deletar visita");
+                carregarVisitas(); // Atualiza tela
+            })
+            .catch(err => console.error(err));
     };
 
-    visitaForm.addEventListener("submit", function (event) {
-        event.preventDefault();
+    carregarVisitas();
 
-        const id = document.getElementById("visitaId").value;
+    visitaForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
         const visita = {
+            id: visitaIdInput.value ? parseInt(visitaIdInput.value, 10) : null,
             responsavel: document.getElementById("responsavel").value,
             empresaInstituicao: document.getElementById("empresa").value,
             dataSolicitada: document.getElementById("dataSolicitada").value,
-            dataAgendada: document.getElementById("dataAgendada").value || null,
-            visitaRealizada: document.getElementById("visitaRealizada").value === "true",
+            dataAgendada: document.getElementById("dataAgendada").value,
+            visitaRealizada: document.getElementById("visitaRealizada").checked,
             quantidadeVisitantes: parseInt(document.getElementById("quantidade").value, 10),
             localVisita: document.getElementById("local").value,
             telefones: document.getElementById("telefones").value,
             observacao: document.getElementById("observacao").value
         };
 
-        const metodo = id ? "PUT" : "POST";
-        const url = id ? `/visitas-tecnicas/api/${id}` : "/visitas-tecnicas/api";
+        const metodo = visita.id ? "PUT" : "POST";
+        const url = visita.id
+            ? `/visitas-tecnicas/api/${visita.id}`
+            : `/visitas-tecnicas/api`;
+
+        const headers = {
+            "Content-Type": "application/json",
+            [csrfHeader]: csrfToken
+        };
 
         fetch(url, {
             method: metodo,
-            headers: { "Content-Type": "application/json" },
+            headers,
             body: JSON.stringify(visita)
         })
-        .then(response => {
-            if (!response.ok) throw new Error("Erro ao salvar visita");
-            return response.json();
-        })
-        .then(() => {
-            modal.style.display = "none";
-            carregarVisitas();
-        })
-        .catch(error => {
-            console.error("Erro ao salvar visita:", error);
-            alert("Erro ao salvar visita.");
-        });
+
+            .then(res => {
+                if (!res.ok) throw new Error("Erro ao salvar visita");
+                return res.json();
+            })
+            .then(() => {
+                modal.style.display = "none";
+                carregarVisitas(); // Atualiza a tela
+            })
+            .catch(err => console.error(err));
     });
 
-    carregarVisitas();
 });

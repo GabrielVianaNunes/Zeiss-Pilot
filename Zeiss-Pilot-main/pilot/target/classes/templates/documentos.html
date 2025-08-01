@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestão de Documentos</title>
+  <link rel="stylesheet" type="text/css" href="/css/styleDocumentos.css">
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header class="cabecalho">
+    <figure>
+      <img class="logo" id="imgTopo" src="/img/Logo-Zeiss-Coop-Transparent.png" alt="Logo Zeiss">
+      <img class="logo" id="imgSenai" src="/img/senai-azul.png" alt="Logo Senai Azul">
+    </figure>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="container">
+    <h1>Gestão de Documentos PDF</h1>
+
+    <!-- Formulário de Upload -->
+    <!-- Botão que ativa o componente -->
+    <button id="btnMostrarUpload" class="btn-cadastrar limpar" type="button" style="margin: 0 auto 20px; display: block;">Adicionar Arquivo</button>
+
+    <!-- Formulário de Upload com visual customizado -->
+    <form id="formDocumento">
+
+    <!-- Componente visual do upload -->
+    <div class="upload-container">
+        <div class="header">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 10V9C7 6.23858 9.23858 4 12 4C14.7614 4 17 6.23858 17 9V10C19.2091 10 21 11.7909 21 14C21 15.4806 20.1956 16.8084 19 17.5M7 10C4.79086 10 3 11.7909 3 14C3 15.4806 3.8044 16.8084 5 17.5M7 10C7.43285 10 7.84965 10.0688 8.24006 10.1959M12 12V21M12 12L15 15M12 12L9 15" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        <p>Selecione o Arquivo!</p>
+        </div>
+        <label for="arquivo" class="footer">
+        <svg fill="#000000" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15.331 6H8.5v20h15V14.154h-8.169z"></path>
+            <path d="M18.153 6h-.009v5.342H23.5v-.002z"></path>
+        </svg>
+        <p id="arquivoSelecionado">Nenhum arquivo selecionado</p>
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.16565 10.1534C5.07629 8.99181 5.99473 8 7.15975 8H16.8402C18.0053 8 18.9237 8.9918 18.8344 10.1534L18.142 19.1534C18.0619 20.1954 17.193 21 16.1479 21H7.85206C6.80699 21 5.93811 20.1954 5.85795 19.1534L5.16565 10.1534Z" stroke="#000000" stroke-width="2"></path>
+            <path d="M19.5 5H4.5" stroke="#000000" stroke-width="2" stroke-linecap="round"></path>
+            <path d="M10 3C10 2.44772 10.4477 2 11 2H13C13.5523 2 14 2.44772 14 3V5H10V3Z" stroke="#000000" stroke-width="2"></path>
+        </svg>
+        </label>
+        <input id="arquivo" name="arquivo" type="file" accept="application/pdf" required>
+    </div>
+
+    <div class="campo-data">
+      <label for="dataExpiracao">Data de Expiração:</label>
+      <input type="date" id="dataExpiracao" name="dataExpiracao" required>
+    </div>    
+
+    <button type="submit" class="botao-upload">Enviar Documento</button>
+    </form>
+
+    <div class="pesquisa-container">
+      <input type="checkbox" class="pesquisa-checkbox" />
+      <div class="pesquisa-box">
+        <div class="pesquisa-icon-container">
+          <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="pesquisa-icon">
+            <path d="M505 442.7l-99.7-99.7C429.8 305.9 448 259.8 448 208 448 93.1 354.9 0 240 0S32 93.1 32 208s93.1 208 208 208c51.8 0 99-18.2 135-48.7l99.7 99.7c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3zM240 368c-88.4 0-160-71.6-160-160S151.6 48 240 48s160 71.6 160 160-71.6 160-160 160z"></path>
+          </svg>
+        </div>
+        <input type="text" class="pesquisa-input" id="barraPesquisa" placeholder="Pesquisar documento..." />
+      </div>
+    </div>  
+
+    <div class="filtros">
+      <label for="filtroStatus">Status:</label>
+      <select id="filtroStatus">
+        <option value="">Todos</option>
+        <option value="ativo">Ativo</option>
+        <option value="prestes-a-vencer">Prestes a Vencer</option>
+        <option value="expirado">Expirado</option>
+      </select>
+
+      <div class="limpar-container">
+        <button id="btnLimparFiltros" class="btn-cadastrar limpar">Limpar Filtros</button>
+      </div>
+    </div>
+
+    <!-- Tabela de Documentos -->
+    <section id="listaDocumentos">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Expiração</th>
+            <th>Status</th>
+            <th>Ações</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tabelaCorpo">
+          <!-- Linhas geradas via JS -->
+        </tbody>
+      </table>
+    </section>
+    <div class="paginacao-container" id="paginacaoContainer">
+      <button id="btnAnterior" class="paginacao" disabled>Anterior</button>
+      <span id="paginaAtual">1</span>
+      <button id="btnProximo" class="paginacao">Próxima</button>
+    </div>
+
+  </main>
+
+   <!-- Rodapé -->
+   <footer class="rodape">
+    <h3>R. Armogaste José da Silveira, 612 - St. Centro Oeste | Goiânia - GO, 74560-550</h3>
+    <h3>CNPJ: 03.783.850/0018-40</h3>
+    <figure>
+      <img class="logo-pequena" src="/img/CentroMetrologia-logo.png" alt="Logo Centro de Metrologia SENAI Zeiss">
+    </figure>
+  </footer>
+
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    window.csrfToken = /*[[${_csrf.token}]]*/ '';
+    window.csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+    /*]]>*/
+  </script>     
+
+  <script src="/js/documentos.js"></script>
+</body>
+</html>

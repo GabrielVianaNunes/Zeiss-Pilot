@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.zeiss.pilot.dto.UsuarioDTO;
@@ -16,10 +17,23 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public UsuarioDTO criarUsuario(Usuario usuario) {
+        if ("ADMIN".equalsIgnoreCase(usuario.getRole())) {
+            if (usuario.getSenha() == null || usuario.getSenha().isBlank()) {
+                throw new IllegalArgumentException("Senha obrigatória para ADMIN");
+            }
+            usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        } else {
+            usuario.setSenha(null); 
+        }
+    
         Usuario salvo = usuarioRepository.save(usuario);
         return toDTO(salvo);
     }
+    
 
     public List<UsuarioDTO> listarUsuarios() {
         return usuarioRepository.findAll()
@@ -35,6 +49,10 @@ public class UsuarioService {
         existente.setNome(usuarioAtualizado.getNome());
         existente.setEmail(usuarioAtualizado.getEmail());
         existente.setRole(usuarioAtualizado.getRole());
+
+        if (usuarioAtualizado.getSenha() != null && !usuarioAtualizado.getSenha().isBlank()) {
+            existente.setSenha(passwordEncoder.encode(usuarioAtualizado.getSenha()));
+        }        
 
         Usuario salvo = usuarioRepository.save(existente);
         return toDTO(salvo);
@@ -65,6 +83,11 @@ public class UsuarioService {
         return usuarioRepository.findById(id)
                 .map(this::toDTO)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    }    
+
+    public Usuario buscarPorEmail(String email) {
+        return usuarioRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o email: " + email));
     }    
     
 }
