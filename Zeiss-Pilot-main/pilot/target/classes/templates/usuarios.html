@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Usuários</title>
+  <link rel="stylesheet" type="text/css" href="/css/styleUsuarios.css">
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header class="cabecalho">
+      <figure>
+          <img class="logo" id="imgTopo" src="/img/Logo-Zeiss-Coop-Transparent.png" alt="Logo Zeiss">
+          <img class="logo" id="imgSenai" src="/img/senai-azul.png" alt="Logo Senai Azul">
+      </figure>
+  </header>  
+
+  <!-- Conteúdo Principal -->
+  <div class="container-geral">
+    <main class="container">
+      <h1>Gerenciamento de Usuários</h1>
+
+      <button id="btnAbrirModal">Adicionar Usuário</button>
+      <!-- Filtros -->
+      <div class="filtros">
+        <label for="filtroRole">Filtrar por Role:</label>
+        <select id="filtroRole">
+          <option value="">Todos</option>
+          <option value="ADMIN">ADMIN</option>
+          <option value="CLIENTE">CLIENTE</option>
+        </select>
+        <button id="btnLimparFiltros" class="btn limpar">Limpar Filtros</button>
+      </div>
+
+      <div id="notificacao" class="notificacao"></div>
+
+      <!-- Modal de Confirmação de Senha -->
+      <div id="modalSenhaConfirmacao">
+        <div class="modal-content">
+          <div class="icone-validacao">🛡️</div>
+          <h3>Confirme sua senha</h3>
+          <input type="password" id="senhaConfirmacaoInput" placeholder="Digite sua senha">
+          <div>
+            <button id="btnConfirmarSenha">Confirmar</button>
+            <button id="btnCancelarSenha">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <table id="tabelaUsuarios">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Linhas serão inseridas via JavaScript -->
+        </tbody>
+
+      </table>
+
+      <div class="paginacao-container" id="paginacaoContainer">
+        <button id="btnAnterior" class="paginacao" disabled>Anterior</button>
+        <span id="paginaAtual">1</span>
+        <span id="paginacaoInfo"></span> 
+        <button id="btnProximo" class="paginacao">Próxima</button>
+      </div>
+
+      <!-- Modal de Cadastro -->
+      <div id="modal" class="modal">
+        <div class="modal-content">
+          <span class="fechar" id="fecharModal">&times;</span>
+          <h2 id="tituloModal">Novo Usuário</h2>
+          <form id="formUsuario">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="role">Role:</label>
+            <select id="role" name="role" required>
+              <option value="CLIENTE">CLIENTE</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+
+            <!-- Campo de senha -->
+            <div id="campoSenha" style="display: none;">
+              <label for="senha">Senha:</label>
+              <input type="password" id="senha" name="senha">
+            </div>
+
+            <!-- Campo de confirmação de senha para edição -->
+            <div id="campoConfirmarSenha" style="display: none;">
+              <label for="confirmarSenha">Senha Atual:</label>
+              <input type="password" id="confirmarSenha" name="confirmarSenha">
+            </div>
+
+            <button type="submit">Salvar</button>
+            <button type="button" id="btnExcluirUsuario" style="display: none;" class="btn excluir">Excluir</button>
+            
+          </form>
+        </div>
+      </div>
+
+    </main>
+  </div> 
+
+  <!-- Rodapé -->
+  <footer class="rodape">
+    <h3>R. Armogaste José da Silveira, 612 - St. Centro Oeste | Goiânia - GO, 74560-550</h3>
+    <h3>CNPJ: 03.783.850/0018-40</h3>
+    <figure>
+      <img class="logo-pequena" src="/img/CentroMetrologia-logo.png" alt="Logo Centro de Metrologia SENAI Zeiss">
+    </figure>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="/js/usuarios.js"></script>
+</body>
+</html>
