@@ -90,26 +90,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderizarVisitas() {
-        visitasContainer.innerHTML = "";
+        const tabelaCorpo = document.getElementById("tabelaCorpo");
+        tabelaCorpo.innerHTML = "";
         const inicio = (paginaAtual - 1) * visitasPorPagina;
         const fim = inicio + visitasPorPagina;
         const visitasPagina = visitasFiltradas.slice(inicio, fim);
 
         visitasPagina.forEach(visita => {
-            const card = document.createElement("div");
-            card.classList.add("visita-card");
+            const linha = document.createElement("tr");
 
-            const dataFormatada = formatarData(visita.dataSolicitada);
+            linha.innerHTML = `
+        <td>${visita.responsavel}</td>
+        <td>${visita.empresaInstituicao}</td>
+        <td>${formatarData(visita.dataSolicitada)}</td>
+        <td>${visita.dataAgendada ? formatarData(visita.dataAgendada) : "-"}</td>
+        <td>${visita.visitaRealizada ? "Sim" : "Não"}</td>
+        <td>${visita.quantidadeVisitantes}</td>
+        <td>${visita.localVisita}</td>
+        <td>${visita.telefones}</td>
+        <td>${visita.observacao}</td>
+        <td>
+            <button class="btn-edit" onclick="editarVisita(${visita.id})">Editar</button>
+            <button class="btn-delete" onclick="deletarVisita(${visita.id})">Excluir</button>
+        </td>
+    `;
 
-            card.innerHTML = `
-                <h3>${visita.responsavel}</h3>
-                <p><strong>Empresa:</strong> ${visita.empresaInstituicao}</p>
-                <p><strong>Data:</strong> ${dataFormatada}</p>
-                <p><strong>Local:</strong> ${visita.localVisita}</p>
-                <button class="btn-edit" onclick="editarVisita(${visita.id})">Editar</button>
-                <button class="btn-delete" onclick="deletarVisita(${visita.id})">Excluir</button>
-            `;
-            visitasContainer.appendChild(card);
+            tabelaCorpo.appendChild(linha);
         });
     }
 
@@ -172,6 +178,53 @@ document.addEventListener("DOMContentLoaded", () => {
         renderizarPaginacao();
     });
 
+    document.getElementById("dataSolicitadaInicio").addEventListener("change", aplicarFiltrosAvancados);
+    document.getElementById("dataSolicitadaFim").addEventListener("change", aplicarFiltrosAvancados);
+    document.getElementById("dataAgendadaInicio").addEventListener("change", aplicarFiltrosAvancados);
+    document.getElementById("dataAgendadaFim").addEventListener("change", aplicarFiltrosAvancados);
+    document.getElementById("filtroVisitaRealizada").addEventListener("change", aplicarFiltrosAvancados);
+
+    function aplicarFiltrosAvancados() {
+        const termo = campoPesquisa.value.toLowerCase();
+        const dataSolicitadaInicio = document.getElementById("dataSolicitadaInicio").value;
+        const dataSolicitadaFim = document.getElementById("dataSolicitadaFim").value;
+        const dataAgendadaInicio = document.getElementById("dataAgendadaInicio").value;
+        const dataAgendadaFim = document.getElementById("dataAgendadaFim").value;
+        const filtroRealizada = document.getElementById("filtroVisitaRealizada").value;
+
+        visitasFiltradas = visitas.filter(visita => {
+            const termoMatch =
+                visita.responsavel.toLowerCase().includes(termo) ||
+                visita.empresaInstituicao.toLowerCase().includes(termo) ||
+                visita.localVisita.toLowerCase().includes(termo) ||
+                (visita.observacao || "").toLowerCase().includes(termo);
+
+            const dataSolicitada = visita.dataSolicitada;
+            const dataAgendada = visita.dataAgendada;
+
+            const dataSolicitadaValida = (
+                (!dataSolicitadaInicio || dataSolicitada >= dataSolicitadaInicio) &&
+                (!dataSolicitadaFim || dataSolicitada <= dataSolicitadaFim)
+            );
+
+            const dataAgendadaValida = (
+                (!dataAgendadaInicio || (dataAgendada && dataAgendada >= dataAgendadaInicio)) &&
+                (!dataAgendadaFim || (dataAgendada && dataAgendada <= dataAgendadaFim))
+            );
+
+            const realizadaValida = (
+                !filtroRealizada ||
+                String(visita.visitaRealizada) === filtroRealizada
+            );
+
+            return termoMatch && dataSolicitadaValida && dataAgendadaValida && realizadaValida;
+        });
+
+        paginaAtual = 1;
+        renderizarVisitas();
+        renderizarPaginacao();
+    }
+
     window.editarVisita = function (id) {
         const visita = visitas.find(v => v.id === id);
         if (!visita) return;
@@ -181,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("empresa").value = visita.empresaInstituicao;
         document.getElementById("dataSolicitada").value = visita.dataSolicitada;
         document.getElementById("dataAgendada").value = visita.dataAgendada;
-        document.getElementById("visitaRealizada").checked = visita.visitaRealizada;
+        document.getElementById("visitaRealizada").value = visita.visitaRealizada;
         document.getElementById("quantidade").value = visita.quantidadeVisitantes;
         document.getElementById("local").value = visita.localVisita;
         document.getElementById("telefones").value = visita.telefones;
@@ -218,10 +271,10 @@ document.addEventListener("DOMContentLoaded", () => {
             id: visitaIdInput.value ? parseInt(visitaIdInput.value, 10) : null,
             responsavel: document.getElementById("responsavel").value,
             empresaInstituicao: document.getElementById("empresa").value,
-            dataSolicitada: document.getElementById("dataSolicitada").value,
-            dataAgendada: document.getElementById("dataAgendada").value,
-            visitaRealizada: document.getElementById("visitaRealizada").checked,
-            quantidadeVisitantes: parseInt(document.getElementById("quantidade").value, 10),
+            dataSolicitada: document.getElementById("dataSolicitada").value || null,
+            dataAgendada: document.getElementById("dataAgendada").value || null,
+            visitaRealizada: document.getElementById("visitaRealizada").value === "true",
+            quantidadeVisitantes: parseInt(document.getElementById("quantidade").value || "0", 10),
             localVisita: document.getElementById("local").value,
             telefones: document.getElementById("telefones").value,
             observacao: document.getElementById("observacao").value
