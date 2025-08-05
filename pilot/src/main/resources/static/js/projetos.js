@@ -259,8 +259,14 @@ function editarProjeto(p) {
 
   btn.onclick = () => {
     if (confirm("Tem certeza que deseja excluir este projeto?")) {
+      const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+      const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
       fetch(`/projetos/api/${p.id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: {
+          [csrfHeader]: csrfToken
+        }
       })
         .then(res => res.ok ? res.text() : Promise.reject())
         .then(() => {
