@@ -139,6 +139,10 @@ function atualizarControlesPaginacao(total) {
   document.getElementById("paginacaoInfo").textContent = `Página ${paginaAtual} de ${total}`;
   document.getElementById("btnAnterior").disabled = paginaAtual === 1;
   document.getElementById("btnProximo").disabled = paginaAtual === total;
+  const infoSpan = document.getElementById("paginacaoInfo");
+  if (infoSpan) {
+    infoSpan.textContent = "";
+  }
 }
 
 function paginaAnterior() {
@@ -192,9 +196,15 @@ document.getElementById("formProjeto").addEventListener("submit", function (e) {
   const metodo = projeto.id ? "PUT" : "POST";
   const url = projeto.id ? `/projetos/api/${projeto.id}` : "/projetos/api";
 
+  const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+  const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
   fetch(url, {
     method: metodo,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      [csrfHeader]: csrfToken
+    },
     body: JSON.stringify(projeto)
   })
     .then(res => res.ok ? res.json() : Promise.reject())
@@ -249,8 +259,14 @@ function editarProjeto(p) {
 
   btn.onclick = () => {
     if (confirm("Tem certeza que deseja excluir este projeto?")) {
+      const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+      const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
       fetch(`/projetos/api/${p.id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: {
+          [csrfHeader]: csrfToken
+        }
       })
         .then(res => res.ok ? res.text() : Promise.reject())
         .then(() => {

@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Projetos</title>
   <link rel="stylesheet" type="text/css" href="/css/styleProjetos.css">
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
 </head>
 <body>
 
@@ -160,8 +162,10 @@
       <div class="paginacao-container" id="paginacaoContainer">
         <button id="btnAnterior" class="paginacao" disabled>Anterior</button>
         <span id="paginaAtual">1</span>
+        <span id="paginacaoInfo"></span> 
         <button id="btnProximo" class="paginacao">Próxima</button>
       </div>
+
 
     </main>
   </div>
