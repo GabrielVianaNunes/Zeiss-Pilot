@@ -121,11 +121,17 @@ document.addEventListener("DOMContentLoaded", function () {
     // Máscara CPF/CNPJ
     cpfOuCnpjInput.addEventListener("input", () => {
         let v = cpfOuCnpjInput.value.replace(/\D/g, "");
+
+        // Limita o número máximo de dígitos a 14 (CNPJ)
+        if (v.length > 14) v = v.slice(0, 14);
+
         if (v.length <= 11) {
+            // CPF: 000.000.000-00
             cpfOuCnpjInput.value = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, (_, a, b, c, d) =>
                 d ? `${a}.${b}.${c}-${d}` : `${a}.${b}.${c}`
             );
         } else {
+            // CNPJ: 00.000.000/0000-00
             cpfOuCnpjInput.value = v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/, (_, a, b, c, d, e) =>
                 e ? `${a}.${b}.${c}/${d}-${e}` : `${a}.${b}.${c}/${d}`
             );
