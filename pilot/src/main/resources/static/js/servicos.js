@@ -145,7 +145,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Somente números inteiros
     quantidadeInput.addEventListener("input", () => {
-        quantidadeInput.value = quantidadeInput.value.replace(/\D/g, "");
+        let valor = quantidadeInput.value.replace(/\D/g, ""); // só números
+        if (valor.length > 4) valor = valor.slice(0, 4);      // máximo 4 dígitos
+        quantidadeInput.value = valor;
     });
 
     // Valor: somente números, vírgulas e pontos
