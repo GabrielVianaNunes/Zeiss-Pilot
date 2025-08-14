@@ -13,6 +13,7 @@ import com.zeiss.pilot.entity.Servico;
 public interface ServicoRepository extends JpaRepository<Servico, Long> {
 
     List<Servico> findByStatus(String status);
+    Servico findByCodigoOS(String codigoOS);
 
     @Query("SELECT new com.zeiss.pilot.dto.RelatorioMensalDTO(YEAR(s.dataCriacao), MONTH(s.dataCriacao), SUM(s.valor), COUNT(s)) " +
            "FROM Servico s GROUP BY YEAR(s.dataCriacao), MONTH(s.dataCriacao) ORDER BY YEAR(s.dataCriacao), MONTH(s.dataCriacao)")

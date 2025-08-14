@@ -19,7 +19,7 @@ body {
     background-color: #ffffff;
     width: 100%;
     padding: 15px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -85,12 +85,13 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border-radius: 10px;
     overflow: hidden;
 }
 
-th, td {
+th,
+td {
     padding: 12px;
     text-align: center;
     border-bottom: 1px solid #e0e0e0;
@@ -158,6 +159,14 @@ td {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
     animation: fadeIn 0.3s ease-in-out;
+
+    /* Adições */
+    max-height: 90vh;
+    /* Limita altura a 90% da viewport */
+    overflow-y: auto;
+    /* Permite rolagem interna vertical */
+    overscroll-behavior: contain;
+    /* Evita scroll da página por acidente */
 }
 
 .modal-content h2 {
@@ -175,7 +184,9 @@ td {
     text-align: left;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
     width: 100%;
     padding: 9px 11px;
     margin-bottom: 10px;
@@ -190,7 +201,8 @@ textarea {
     min-height: 60px;
 }
 
-.btn-salvar, .btn-excluir-modal {
+.btn-salvar,
+.btn-excluir-modal {
     display: block;
     width: 100%;
     padding: 10px;
@@ -235,8 +247,15 @@ textarea {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* Rodapé */
@@ -249,7 +268,7 @@ textarea {
     width: 100%;
     border-top: 1px solid #ddd;
     animation: fadeInRodape 1.5s ease-in;
-    box-shadow: 0 2px 7px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.2);
 }
 
 .rodape h3 {
@@ -265,68 +284,68 @@ textarea {
 /* Responsivo */
 @media screen and (max-width: 768px) {
     .container {
-      padding: 15px;
-      margin-top: 140px;
+        padding: 15px;
+        margin-top: 140px;
     }
 
     table {
-      display: block;
-      overflow-x: auto;
-      white-space: nowrap;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
     }
 
     #imgTopo,
     #imgSenai {
-      width: 100px;
+        width: 100px;
     }
 
     .modal-content {
-      width: 95%;
+        width: 95%;
     }
 }
 
 .paginacao-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin: 30px 0;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 30px 0;
+    flex-wrap: wrap;
 }
 
 .paginacao {
-  padding: 6px 8px;
-  font-size: 0.85rem;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.1s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    padding: 6px 8px;
+    font-size: 0.85rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .paginacao:hover:not(:disabled) {
-  background-color: #004494;
-  transform: scale(1.03);
+    background-color: #004494;
+    transform: scale(1.03);
 }
 
 .paginacao:disabled {
-  background-color: #8b8a8a9c;
-  cursor: not-allowed;
-  opacity: 0.7;
+    background-color: #8b8a8a9c;
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
 #paginaAtual {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #007bff;
-  padding: 8px 12px;
-  border-radius: 6px;
-  background-color: #f8f9fa;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    font-size: 1rem;
+    font-weight: bold;
+    color: #007bff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 #paginacaoInfo {
-  font-weight: bold;
+    font-weight: bold;
 }

@@ -3,15 +3,24 @@ const modal = document.getElementById("modalServico");
 const btnExcluirServico = document.getElementById("btnExcluirServico");
 let servicoEmEdicao = null;
 
+// 🔐 CSRF Token e Header (inserido pelo Spring Security via metatags no HTML)
+const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute("content");
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
+
 // 🔹 FUNÇÃO PARA EDITAR SERVIÇO - Agora acessa `modal` corretamente
 function editarServico(id) {
     fetch(`/servicos/api/${id}`)
         .then(response => response.json())
         .then(servico => {
             document.getElementById("cliente").value = servico.cliente;
+            document.getElementById("cpfOuCnpj").value = servico.cpfOuCnpj;
+            document.getElementById("endereco").value = servico.endereco;
             document.getElementById("solicitacao").value = servico.solicitacao;
             document.getElementById("quantidade").value = servico.quantidade;
             document.getElementById("status").value = servico.status;
+            document.getElementById("tecnicoResponsavel").value = servico.tecnicoResponsavel;
+            document.getElementById("dataPrevista").value = servico.dataExecucaoPrevista;
+            document.getElementById("dataRealizada").value = servico.dataExecucaoRealizada || "";
             document.getElementById("valor").value = servico.valor;
             document.getElementById("observacao").value = servico.observacao || "";
 
@@ -30,7 +39,12 @@ function editarServico(id) {
 // 🔹 EXCLUIR SERVIÇO
 function excluirServico(id) {
     if (confirm("Tem certeza que deseja excluir este serviço?")) {
-        fetch(`/servicos/api/${id}`, { method: "DELETE" })
+        fetch(`/servicos/api/${id}`, {
+            method: "DELETE",
+            headers: {
+                [csrfHeader]: csrfToken
+            }
+        })
             .then(() => {
                 modal.style.display = "none";
                 carregarServicos();
@@ -54,6 +68,8 @@ function carregarServicos() {
                     <td>${servico.solicitacao}</td>
                     <td>${servico.quantidade}</td>
                     <td>${servico.status}</td>
+                    <td>${servico.tecnicoResponsavel}</td>
+                    <td>${servico.dataExecucaoPrevista || "-"}</td>
                     <td>R$ ${servico.valor.toFixed(2)}</td>
                     <td>${servico.observacao || "-"}</td>
                     <td>
@@ -80,15 +96,56 @@ function carregarServicos() {
 // 🔹 LIMPAR FORMULÁRIO
 function limparFormulario() {
     document.getElementById("cliente").value = "";
+    document.getElementById("cpfOuCnpj").value = "";
+    document.getElementById("endereco").value = "";
     document.getElementById("solicitacao").value = "";
     document.getElementById("quantidade").value = "";
-    document.getElementById("status").value = "1º Contato";
+    document.getElementById("status").value = "Elaboração de proposta";
+    document.getElementById("tecnicoResponsavel").value = "";
+    document.getElementById("dataPrevista").value = "";
+    document.getElementById("dataRealizada").value = "";
     document.getElementById("valor").value = "";
     document.getElementById("observacao").value = "";
 }
 
+
 document.addEventListener("DOMContentLoaded", function () {
     carregarServicos();
+
+    // Máscaras e validações de campos
+    const cpfOuCnpjInput = document.getElementById("cpfOuCnpj");
+    const tecnicoInput = document.getElementById("tecnicoResponsavel");
+    const quantidadeInput = document.getElementById("quantidade");
+    const valorInput = document.getElementById("valor");
+
+    // Máscara CPF/CNPJ
+    cpfOuCnpjInput.addEventListener("input", () => {
+        let v = cpfOuCnpjInput.value.replace(/\D/g, "");
+        if (v.length <= 11) {
+            cpfOuCnpjInput.value = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, (_, a, b, c, d) =>
+                d ? `${a}.${b}.${c}-${d}` : `${a}.${b}.${c}`
+            );
+        } else {
+            cpfOuCnpjInput.value = v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/, (_, a, b, c, d, e) =>
+                e ? `${a}.${b}.${c}/${d}-${e}` : `${a}.${b}.${c}/${d}`
+            );
+        }
+    });
+
+    // Somente letras com acento para técnico
+    tecnicoInput.addEventListener("input", () => {
+        tecnicoInput.value = tecnicoInput.value.replace(/[^A-Za-zÀ-ÿ\s]/g, "");
+    });
+
+    // Somente números inteiros
+    quantidadeInput.addEventListener("input", () => {
+        quantidadeInput.value = quantidadeInput.value.replace(/\D/g, "");
+    });
+
+    // Valor: somente números, vírgulas e pontos
+    valorInput.addEventListener("input", () => {
+        valorInput.value = valorInput.value.replace(/[^0-9.,]/g, "").replace(",", ".");
+    });
 
     // Referência aos elementos do modal dentro do escopo correto
     const btnNovoServico = document.getElementById("btnNovoServico");
@@ -128,10 +185,16 @@ document.addEventListener("DOMContentLoaded", function () {
             observacao = observacao.length > 0 ? observacao : null;
 
             let servico = {
-                cliente: document.getElementById("cliente").value,
-                solicitacao: document.getElementById("solicitacao").value,
+                cliente: document.getElementById("cliente").value.trim(),
+                cpfOuCnpj: document.getElementById("cpfOuCnpj").value.trim(),
+                endereco: document.getElementById("endereco").value.trim(),
+                solicitacao: document.getElementById("solicitacao").value.trim(),
+                dataCriacao: new Date().toISOString().split("T")[0],
                 quantidade: parseInt(document.getElementById("quantidade").value),
                 status: document.getElementById("status").value,
+                tecnicoResponsavel: document.getElementById("tecnicoResponsavel").value.trim(),
+                dataExecucaoPrevista: document.getElementById("dataPrevista").value,
+                dataExecucaoRealizada: document.getElementById("dataRealizada").value || null,
                 valor: parseFloat(document.getElementById("valor").value),
                 observacao: observacao
             };
@@ -139,7 +202,10 @@ document.addEventListener("DOMContentLoaded", function () {
             if (servicoEmEdicao) {
                 fetch(`/servicos/api/${servicoEmEdicao}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        [csrfHeader]: csrfToken
+                    },
                     body: JSON.stringify(servico)
                 })
                     .then(response => response.json())
@@ -152,7 +218,10 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 fetch('/servicos/api', {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        [csrfHeader]: csrfToken
+                    },
                     body: JSON.stringify(servico)
                 })
                     .then(response => response.json())

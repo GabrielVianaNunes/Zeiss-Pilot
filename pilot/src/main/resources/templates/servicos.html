@@ -1,47 +1,56 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Serviços</title>
   <link rel="stylesheet" type="text/css" href="/css/styleServicos.css">
+
+  <!-- 🔐 CSRF Tokens para requisições JS -->
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
 </head>
+
 <body>
 
   <!-- Cabeçalho -->
   <header class="cabecalho">
-      <figure>
-          <img class="logo" id="imgTopo" src="/img/Logo-Zeiss-Coop-Transparent.png" alt="Logo Zeiss">
-          <img class="logo" id="imgSenai" src="/img/senai-azul.png" alt="Logo Senai Azul">
-      </figure>
-  </header>  
+    <figure>
+      <img class="logo" id="imgTopo" src="/img/Logo-Zeiss-Coop-Transparent.png" alt="Logo Zeiss">
+      <img class="logo" id="imgSenai" src="/img/senai-azul.png" alt="Logo Senai Azul">
+    </figure>
+  </header>
 
   <!-- Conteúdo Principal -->
   <main class="container">
-      <h1>Gerenciamento de Serviços</h1 >
+    <h1>Gerenciamento de Serviços</h1>
 
-      <!-- Botão para Abrir o Modal -->
+    <!-- Botão para Abrir o Modal -->
     <button id="btnNovoServico">+ Novo Serviço</button>
     <a href="/servicos/relatorio-servicos">
-        <button class="btn-dashboard">Dashboards</button>
+      <button class="btn-dashboard">Dashboards</button>
     </a>
-  
+
     <!-- Tabela de Serviços -->
     <table>
-        <thead>
-            <tr>
-                <th>Cliente</th>
-                <th>Solicitação</th>
-                <th>Quantidade</th>
-                <th>Status</th>
-                <th>Valor</th>
-                <th>Observação</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody id="tabelaServicos">
-            <!-- Linhas serão adicionadas dinamicamente pelo JavaScript -->
-        </tbody>
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Solicitação</th>
+          <th>Quantidade</th>
+          <th>Status</th>
+          <th>Técnico</th>
+          <th>Data Prevista</th>
+          <th>Valor</th>
+          <th>Observação</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaServicos">
+        <!-- Linhas serão adicionadas dinamicamente pelo JavaScript -->
+      </tbody>
     </table>
 
     <div class="paginacao-container" id="paginacaoContainer">
@@ -54,41 +63,56 @@
 
   <!-- Modal de Cadastro de Serviço -->
   <div id="modalServico" class="modal">
-      <div class="modal-content">
-          <span class="close">&times;</span>
-          <h2>Cadastrar Serviço</h2>
-          <form id="servicoForm">
-              <input type="hidden" id="servicoId">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Cadastrar Serviço</h2>
+      <form id="servicoForm">
+        <input type="hidden" id="servicoId">
 
-              <label for="cliente">Cliente:</label>
-              <input type="text" id="cliente" placeholder="Nome do cliente" required>
+        <label for="cliente">Cliente:</label>
+        <input type="text" id="cliente" placeholder="Nome do cliente" required>
 
-              <label for="solicitacao">Solicitação:</label>
-              <input type="text" id="solicitacao" placeholder="Descrição do serviço" required>
+        <label for="cpfOuCnpj">CPF ou CNPJ:</label>
+        <input type="text" id="cpfOuCnpj" placeholder="CPF ou CNPJ do cliente" required>
 
-              <label for="quantidade">Quantidade:</label>
-              <input type="number" id="quantidade" placeholder="Quantidade" required>
+        <label for="endereco">Endereço:</label>
+        <input type="text" id="endereco" placeholder="Endereço completo do cliente" required>
 
-              <label for="status">Status:</label>
-              <select id="status" required>
-                  <option value="1º Contato">1º Contato</option>
-                  <option value="Elaboração de proposta">Elaboração de proposta</option>
-                  <option value="Visita">Visita</option>
-                  <option value="Negociação">Negociação</option>
-                  <option value="Venda finalizada">Venda finalizada</option>
-                  <option value="Desistiu">Desistiu</option>
-              </select>
 
-              <label for="valor">Valor (R$):</label>
-              <input type="number" id="valor" step="0.01" placeholder="Valor do serviço" required>
+        <label for="solicitacao">Solicitação:</label>
+        <input type="text" id="solicitacao" placeholder="Descrição do serviço" required>
 
-              <label for="observacao">Observação (Opcional):</label>
-              <textarea id="observacao" placeholder="Observações adicionais"></textarea>
+        <label for="quantidade">Quantidade:</label>
+        <input type="number" id="quantidade" placeholder="Quantidade" required>
 
-              <button type="submit" class="btn-salvar">Salvar Serviço</button>
-              <button type="button" id="btnExcluirServico" class="btn-excluir-modal" style="display: none;">Excluir Serviço</button>
-          </form>
-      </div>
+        <label for="status">Status:</label>
+        <select id="status" required>
+          <option value="Elaboração de proposta">Elaboração de proposta</option>
+          <option value="Negociação">Negociação</option>
+          <option value="Venda finalizada">Venda finalizada</option>
+          <option value="Desistiu">Desistiu</option>
+        </select>
+
+        <label for="tecnicoResponsavel">Técnico Responsável:</label>
+        <input type="text" id="tecnicoResponsavel" placeholder="Nome do técnico" required>
+
+        <label for="dataPrevista">Data de Execução Prevista:</label>
+        <input type="date" id="dataPrevista" required>
+
+        <label for="dataRealizada">Data de Execução Realizada:</label>
+        <input type="date" id="dataRealizada">
+
+        <label for="valor">Valor (R$):</label>
+        <input type="number" id="valor" step="0.01" placeholder="Valor do serviço" required>
+
+        <label for="observacao">Observação (Opcional):</label>
+        <textarea id="observacao" placeholder="Observações adicionais"></textarea>
+
+        <button type="submit" class="btn-salvar">Salvar Serviço</button>
+        <button type="button" id="btnExcluirServico" class="btn-excluir-modal" style="display: none;">Excluir
+          Serviço</button>
+      </form>
+    </div>
   </div>
 
   <!-- Rodapé -->
@@ -104,4 +128,5 @@
   <script src="/js/servicos.js"></script>
 
 </body>
+
 </html>
