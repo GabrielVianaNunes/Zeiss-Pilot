@@ -138,6 +138,18 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // 🔹 Limitar intervalo de datas: 5 anos antes e 5 anos depois da data atual
+    const dataAtual = new Date();
+    const anoAtual = dataAtual.getFullYear();
+    const cincoAnosAtras = new Date(anoAtual - 5, 0, 1).toISOString().split("T")[0];
+    const cincoAnosDepois = new Date(anoAtual + 5, 11, 31).toISOString().split("T")[0];
+
+    // Aplica limites aos campos de data
+    document.getElementById("dataPrevista").setAttribute("min", cincoAnosAtras);
+    document.getElementById("dataPrevista").setAttribute("max", cincoAnosDepois);
+    document.getElementById("dataRealizada").setAttribute("min", cincoAnosAtras);
+    document.getElementById("dataRealizada").setAttribute("max", cincoAnosDepois);
+
     // Somente letras com acento para técnico
     tecnicoInput.addEventListener("input", () => {
         tecnicoInput.value = tecnicoInput.value.replace(/[^A-Za-zÀ-ÿ\s]/g, "");
