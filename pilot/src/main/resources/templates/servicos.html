@@ -83,7 +83,7 @@
         <input type="text" id="solicitacao" placeholder="Descrição do serviço" required>
 
         <label for="quantidade">Quantidade:</label>
-        <input type="number" id="quantidade" placeholder="Quantidade" required>
+        <input type="number" id="quantidade" placeholder="Quantidade" min="1" max="100000" required>
 
         <label for="status">Status:</label>
         <select id="status" required>
@@ -103,7 +103,7 @@
         <input type="date" id="dataRealizada">
 
         <label for="valor">Valor (R$):</label>
-        <input type="number" id="valor" step="0.01" placeholder="Valor do serviço" required>
+        <input type="text" id="valor" placeholder="Valor do serviço" required>
 
         <label for="observacao">Observação (Opcional):</label>
         <textarea id="observacao" placeholder="Observações adicionais"></textarea>
