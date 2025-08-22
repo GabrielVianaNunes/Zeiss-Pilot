@@ -70,7 +70,7 @@ function carregarServicos() {
                     <td>${servico.status}</td>
                     <td>${servico.tecnicoResponsavel}</td>
                     <td>${servico.dataExecucaoPrevista || "-"}</td>
-                    <td>R$ ${servico.valor.toFixed(2)}</td>
+                    <td>R$ ${servico.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                     <td>${servico.observacao || "-"}</td>
                     <td>
                         <button class="edit-button" data-id="${servico.id}">
@@ -162,9 +162,30 @@ document.addEventListener("DOMContentLoaded", function () {
         quantidadeInput.value = valor;
     });
 
-    // Valor: somente números, vírgulas e pontos
+    // 🔹 VALOR: formatar ao digitar, no padrão "1.234,56", até R$ 100.000.000,00
     valorInput.addEventListener("input", () => {
-        valorInput.value = valorInput.value.replace(/[^0-9.,]/g, "").replace(",", ".");
+        // Remove tudo que não for número
+        let valorNumerico = valorInput.value.replace(/\D/g, "");
+
+        // Se estiver vazio, limpa o campo e retorna
+        if (!valorNumerico) {
+            valorInput.value = "";
+            return;
+        }
+
+        // Limita a 10 dígitos (máx: 99.999.999,99)
+        if (valorNumerico.length > 10) {
+            valorNumerico = valorNumerico.slice(0, 10);
+        }
+
+        // Converte para float e formata com Intl
+        const valorFloat = (parseInt(valorNumerico, 10) / 100);
+        const valorFormatado = valorFloat.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        valorInput.value = valorFormatado;
     });
 
     // Referência aos elementos do modal dentro do escopo correto
@@ -215,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 tecnicoResponsavel: document.getElementById("tecnicoResponsavel").value.trim(),
                 dataExecucaoPrevista: document.getElementById("dataPrevista").value,
                 dataExecucaoRealizada: document.getElementById("dataRealizada").value || null,
-                valor: parseFloat(document.getElementById("valor").value),
+                valor: parseFloat(document.getElementById("valor").value.replace(/\./g, "").replace(",", ".")),
                 observacao: observacao
             };
 
