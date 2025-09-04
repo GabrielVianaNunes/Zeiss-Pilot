@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
       spanArquivo.textContent = "Nenhum arquivo selecionado";
 
       // Redireciona para a página que lista pelos documentos da subpasta
-      window.location.href = `/documentosPorSubpasta.html?id=${encodeURIComponent(subpastaId)}`;
+      window.location.href = `/documentosPorSubpasta?id=${encodeURIComponent(subpastaId)}`;
     } catch (err) {
       console.error(err);
       alert("Erro na requisição.");
