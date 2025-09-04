@@ -18,12 +18,12 @@
     </figure>
   </header>
 
-      <!-- Conteúdo principal -->
-    <main class="container">
+  <!-- Conteúdo principal -->
+  <main class="container">
+    <div class="topbar">
       <h2 class="titulo-pagina">Gerenciamento de Pastas</h2>
-
-      <!-- Botão para abrir modal de criação de pasta -->
-    <button id="btnAbrirModalPasta" class="btn-cadastrar">+ Criar Nova Pasta</button>
+      <button id="btnAbrirModalPasta" class="btn-primary">+ Criar Nova Pasta</button>
+    </div>
 
     <!-- Modal de Criação de Pasta -->
     <div id="modalNovaPasta" class="modal-overlay" style="display: none;">
@@ -35,20 +35,20 @@
             <option value="PUBLICO">🔓 Pública</option>
             <option value="INTERNO">🔒 Interna</option>
           </select>
-          <button id="btnCriarPasta" class="btn-cadastrar">Criar</button>
+          <button id="btnCriarPasta" class="btn-primary">Criar</button>
         </div>
-        <button id="btnFecharModalPasta" class="btn-cancelar">Fechar</button>
+        <button id="btnFecharModalPasta" class="btn-secondary">Fechar</button>
       </div>
     </div>
 
-        <!-- Modal de Subpastas -->
+    <!-- Modal de Subpastas -->
     <div id="modalSubpastas" class="modal-overlay" style="display: none;">
       <div class="modal-content">
         <h3>Gerenciar Subpastas de <span id="tituloPastaPai"></span></h3>
 
         <!-- Listagem de subpastas existentes -->
         <ul id="listaSubpastas" class="lista-subpastas">
-          <!-- Itens inseridos via JS -->
+          <!-- Itens via JS -->
         </ul>
 
         <!-- Formulário para criar nova subpasta -->
@@ -58,26 +58,32 @@
             <option value="PUBLICO">🔓 Pública</option>
             <option value="INTERNO">🔒 Interna</option>
           </select>
-          <button id="btnCriarSubpasta" class="btn-cadastrar">+ Criar Subpasta</button>
+          <button id="btnCriarSubpasta" class="btn-primary">+ Criar Subpasta</button>
         </div>
 
-        <button id="btnFecharModalSubpastas" class="btn-cancelar">Fechar</button>
+        <button id="btnFecharModalSubpastas" class="btn-secondary">Fechar</button>
       </div>
     </div>
 
     <!-- Seção de Pastas Internas -->
     <section id="pastas-internas" class="secao-pastas">
-      <h3>🔒 Pastas Internas</h3>
+      <div class="secao-header">
+        <h3>🔒 Pastas Internas</h3>
+        <span class="badge" id="badge-internas">0</span>
+      </div>
       <div class="grid-pastas" id="grid-internas">
-        <!-- Pastas internas serão inseridas aqui via JavaScript -->
+        <!-- Cards via JS -->
       </div>
     </section>
 
     <!-- Seção de Pastas Públicas -->
     <section id="pastas-publicas" class="secao-pastas">
-      <h3>🔓 Pastas Públicas</h3>
+      <div class="secao-header">
+        <h3>🔓 Pastas Públicas</h3>
+        <span class="badge" id="badge-publicas">0</span>
+      </div>
       <div class="grid-pastas" id="grid-publicas">
-        <!-- Pastas públicas serão inseridas aqui via JavaScript -->
+        <!-- Cards via JS -->
       </div>
     </section>
   </main>
@@ -98,7 +104,6 @@
     /*]]>*/
   </script>
 
-  <!-- Script da página -->
   <script src="/js/pastas.js"></script>
 </body>
 </html>

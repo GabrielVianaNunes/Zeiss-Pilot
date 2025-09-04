@@ -74,38 +74,54 @@ function carregarPastas() {
           publicasContainer.appendChild(card);
         }
       });
+
+      atualizarBadges();
     })
     .catch(erro => console.error("Erro ao carregar pastas:", erro));
 }
 
+function atualizarBadges() {
+  const internas = document.querySelectorAll('#grid-internas .card').length;
+  const publicas = document.querySelectorAll('#grid-publicas .card').length;
+  const bInt = document.getElementById('badge-internas');
+  const bPub = document.getElementById('badge-publicas');
+  if (bInt) bInt.textContent = internas;
+  if (bPub) bPub.textContent = publicas;
+}
+
 function criarCardPasta(pasta) {
   const div = document.createElement("div");
-  div.className = "pasta-card";
+  div.className = "card"; // Uiverse card
   div.dataset.id = pasta.id;
   div.dataset.nome = pasta.nome;
   div.dataset.acesso = pasta.tipoAcesso;
 
-  const h4 = document.createElement("h4");
-  h4.textContent = pasta.nome;
+  // Monta o HTML do card exatamente como no Uiverse
+  div.innerHTML = `
+    <div class="card-details">
+      <p class="text-title">${escapeHtml(pasta.nome)}</p>
+      <p class="text-body">${pasta.tipoAcesso === "INTERNO" ? "🔒 Interna" : "🔓 Pública"}</p>
+    </div>
+    <a class="card-button" href="#" data-id="${pasta.id}">Subpastas</a>
+  `;
 
-  const p = document.createElement("p");
-  p.textContent = pasta.tipoAcesso === "INTERNO" ? "🔒 Interno" : "🔓 Público";
-
-  const actions = document.createElement("div");
-  actions.className = "actions";
-
-  const btnSubpastas = document.createElement("button");
-  btnSubpastas.className = "btn-subpastas";
-  btnSubpastas.textContent = "📁 Subpastas";
-  btnSubpastas.onclick = () => abrirModalSubpastas(pasta.id, pasta.nome);
-
-  actions.appendChild(btnSubpastas);
-  div.appendChild(h4);
-  div.appendChild(p);
-  div.appendChild(actions);
+  // Clique em “Subpastas” abre o modal de subpastas
+  const btn = div.querySelector(".card-button");
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    abrirModalSubpastas(pasta.id, pasta.nome);
+  });
 
   return div;
 }
+
+// helper para evitar XSS em nome de pasta
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, s => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+  }[s]));
+}
+
 
 // ------------------ MODAL DE SUBPASTAS ------------------
 let pastaPaiAtualId = null;
