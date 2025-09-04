@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gerenciar Pastas</title>
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+  <link rel="stylesheet" type="text/css" href="/css/stylePastas.css">
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header class="cabecalho">
+    <figure>
+      <img class="logo" id="imgTopo" src="/img/Logo-Zeiss-Coop-Transparent.png" alt="Logo Zeiss">
+      <img class="logo" id="imgSenai" src="/img/senai-azul.png" alt="Logo Senai Azul">
+    </figure>
+  </header>
+
+      <!-- Conteúdo principal -->
+    <main class="container">
+      <h2 class="titulo-pagina">Gerenciamento de Pastas</h2>
+
+      <!-- Botão para abrir modal de criação de pasta -->
+    <button id="btnAbrirModalPasta" class="btn-cadastrar">+ Criar Nova Pasta</button>
+
+    <!-- Modal de Criação de Pasta -->
+    <div id="modalNovaPasta" class="modal-overlay" style="display: none;">
+      <div class="modal-content">
+        <h3>Criar Nova Pasta Principal</h3>
+        <div class="form-subpasta">
+          <input type="text" id="nomeNovaPasta" placeholder="Nome da pasta">
+          <select id="tipoNovaPasta">
+            <option value="PUBLICO">🔓 Pública</option>
+            <option value="INTERNO">🔒 Interna</option>
+          </select>
+          <button id="btnCriarPasta" class="btn-cadastrar">Criar</button>
+        </div>
+        <button id="btnFecharModalPasta" class="btn-cancelar">Fechar</button>
+      </div>
+    </div>
+
+        <!-- Modal de Subpastas -->
+    <div id="modalSubpastas" class="modal-overlay" style="display: none;">
+      <div class="modal-content">
+        <h3>Gerenciar Subpastas de <span id="tituloPastaPai"></span></h3>
+
+        <!-- Listagem de subpastas existentes -->
+        <ul id="listaSubpastas" class="lista-subpastas">
+          <!-- Itens inseridos via JS -->
+        </ul>
+
+        <!-- Formulário para criar nova subpasta -->
+        <div class="form-subpasta">
+          <input type="text" id="nomeSubpasta" placeholder="Nome da subpasta">
+          <select id="tipoSubpasta">
+            <option value="PUBLICO">🔓 Pública</option>
+            <option value="INTERNO">🔒 Interna</option>
+          </select>
+          <button id="btnCriarSubpasta" class="btn-cadastrar">+ Criar Subpasta</button>
+        </div>
+
+        <button id="btnFecharModalSubpastas" class="btn-cancelar">Fechar</button>
+      </div>
+    </div>
+
+    <!-- Seção de Pastas Internas -->
+    <section id="pastas-internas" class="secao-pastas">
+      <h3>🔒 Pastas Internas</h3>
+      <div class="grid-pastas" id="grid-internas">
+        <!-- Pastas internas serão inseridas aqui via JavaScript -->
+      </div>
+    </section>
+
+    <!-- Seção de Pastas Públicas -->
+    <section id="pastas-publicas" class="secao-pastas">
+      <h3>🔓 Pastas Públicas</h3>
+      <div class="grid-pastas" id="grid-publicas">
+        <!-- Pastas públicas serão inseridas aqui via JavaScript -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="rodape">
+    <h3>R. Armogaste José da Silveira, 612 - St. Centro Oeste | Goiânia - GO, 74560-550</h3>
+    <h3>CNPJ: 03.783.850/0018-40</h3>
+    <figure>
+      <img class="logo-pequena" src="/img/CentroMetrologia-logo.png" alt="Logo Centro de Metrologia SENAI Zeiss">
+    </figure>
+  </footer>
+
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    window.csrfToken = /*[[${_csrf.token}]]*/ '';
+    window.csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+    /*]]>*/
+  </script>
+
+  <!-- Script da página -->
+  <script src="/js/pastas.js"></script>
+</body>
+</html>

@@ -1,20 +1,22 @@
+// documentos.js (apenas upload)
 document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("formDocumento");
-  const tabelaCorpo = document.getElementById("tabelaCorpo");
-  const botaoToggle = document.getElementById("btnMostrarUpload");
-  const csrfToken = window.csrfToken || '';
-  const csrfHeader = window.csrfHeader || '';
-  const barraPesquisa = document.getElementById("barraPesquisa");
-  const filtroStatus = document.getElementById("filtroStatus");
-  const btnLimparFiltros = document.getElementById("btnLimparFiltros");
-  const btnAnterior = document.getElementById("btnAnterior");
-  const btnProximo = document.getElementById("btnProximo");
-  const spanPaginaAtual = document.getElementById("paginaAtual");
+  // === CONFIG ===
+  const UPLOAD_URL = "/api/documentos/upload"; // ajuste para "/api/documentos" se seu Controller estiver assim
 
-  let paginaAtual = 0;
-  const tamanhoPagina = 10;
-  let totalPaginas = 1;
+  // CSRF (Spring Security via Thymeleaf)
+  const csrfToken  = window.csrfToken  || "";
+  const csrfHeader = window.csrfHeader || "";
 
+  // Elementos principais
+  const form           = document.getElementById("formDocumento");
+  const botaoToggle    = document.getElementById("btnMostrarUpload");
+  const pastaSelect    = document.getElementById("pastaSelect");
+  const subpastaSelect = document.getElementById("subpastaSelect");
+  const inputArquivo   = document.getElementById("arquivo");
+  const spanArquivo    = document.getElementById("arquivoSelecionado");
+  const inputExp       = document.getElementById("dataExpiracao");
+
+  // === UI: mostrar/ocultar formulário ===
   botaoToggle.addEventListener("click", () => {
     const aberto = form.classList.contains("ativo");
     form.classList.toggle("ativo");
@@ -25,220 +27,126 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // === Upload ===
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    const arquivo = document.getElementById("arquivo").files[0];
-    const dataExpiracao = document.getElementById("dataExpiracao").value;
+    const arquivo       = inputArquivo.files[0];
+    const dataExpiracao = inputExp.value;
+    const pastaId       = pastaSelect.value;
+    const subpastaId    = subpastaSelect.value;
 
-    if (!arquivo || !dataExpiracao) {
-      alert("Preencha todos os campos obrigatórios.");
-      return;
-    }
+    // Validações
+    if (!arquivo)        { alert("Selecione um arquivo PDF."); return; }
+    if (!pastaId)        { alert("Selecione uma pasta."); return; }
+    if (!subpastaId)     { alert("Selecione uma subpasta."); return; }
+    if (!dataExpiracao)  { alert("Informe a data de expiração."); return; }
 
-    const formData = new FormData();
-    formData.append("arquivo", arquivo);
-    formData.append("dataExpiracao", dataExpiracao);
+    // Monta FormData
+    const fd = new FormData();
+    fd.append("arquivo", arquivo);
+    fd.append("dataExpiracao", dataExpiracao);
+    fd.append("subpastaId", subpastaId);
+    // Se o backend também usa pastaId por algum motivo, mantenha:
+    // fd.append("pastaId", pastaId);
+    // Caso tenha mais campos (nome, etc.), adicione-os aqui:
+    // fd.append("nome", document.getElementById("nome").value);
 
     const headers = new Headers();
     if (csrfHeader && csrfToken) headers.append(csrfHeader, csrfToken);
 
     try {
-      const response = await fetch("/api/documentos", {
+      const resp = await fetch(UPLOAD_URL, {
         method: "POST",
-        body: formData,
-        headers: headers
+        body: fd,
+        headers
       });
 
-      if (response.ok) {
-        alert("Documento enviado com sucesso!");
-        form.reset();
-        document.getElementById("arquivoSelecionado").textContent = "Nenhum arquivo selecionado";
-        await aplicarFiltros(); // recarrega
-      } else {
+      if (!resp.ok) {
+        const txt = await resp.text().catch(() => "");
+        console.error("Erro no upload:", txt || resp.status);
         alert("Erro ao enviar documento.");
+        return;
       }
-    } catch (error) {
-      console.error(error);
+
+      // Sucesso
+      alert("Documento enviado com sucesso!");
+      form.reset();
+      spanArquivo.textContent = "Nenhum arquivo selecionado";
+
+      // Redireciona para a página que lista pelos documentos da subpasta
+      window.location.href = `/documentosPorSubpasta.html?id=${encodeURIComponent(subpastaId)}`;
+    } catch (err) {
+      console.error(err);
       alert("Erro na requisição.");
     }
   });
 
-  async function aplicarFiltros() {
-    const termo = barraPesquisa.value.trim();
-    const status = filtroStatus.value;
-
-    const params = new URLSearchParams();
-    if (termo) params.append("nome", termo);
-    if (status) params.append("status", status);
-    params.append("page", paginaAtual);
-    params.append("size", tamanhoPagina);
-
+  // === Carregar Pastas ===
+  async function carregarPastasDisponiveis() {
     try {
-      const response = await fetch(`/api/documentos/usuario/meus?${params.toString()}`);
-      const page = await response.json();
+      const resp = await fetch("/api/pastas");
+      if (!resp.ok) throw new Error("Falha ao buscar pastas");
+      const pastas = await resp.json();
 
-      if (!page || !Array.isArray(page.content)) throw new Error("Resposta inválida");
-
-      renderizarTabela(page.content);
-      totalPaginas = page.totalPages;
-      atualizarControlesPaginacao();
+      pastaSelect.innerHTML = '<option value="">Selecione uma pasta</option>';
+      (pastas || []).forEach((pasta) => {
+        const option = document.createElement("option");
+        option.value = pasta.id;
+        option.textContent = `${pasta.nome} ${pasta.tipoAcesso === "INTERNO" ? "🔒" : "🔓"}`;
+        pastaSelect.appendChild(option);
+      });
     } catch (error) {
-      console.error("Erro ao aplicar filtros:", error);
+      console.error("Erro ao carregar pastas:", error);
+      pastaSelect.innerHTML = '<option value="">Erro ao carregar pastas</option>';
     }
   }
 
-  function renderizarTabela(lista) {
-    tabelaCorpo.innerHTML = "";
-    lista.forEach(doc => {
-      const statusFormatado = doc.status.charAt(0).toUpperCase() + doc.status.slice(1).toLowerCase();
-      const classeStatus = doc.status.toLowerCase().replace(/\s/g, '-');
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${doc.nomeArquivo}</td>
-        <td>${formatarData(doc.dataExpiracao)}</td>
-        <td><span class="status ${classeStatus}">${statusFormatado}</span></td>
-        <td><button class="acao abrir" onclick="abrirPDF(${doc.id})">Abrir</button></td>
-        <td><button class="acao editar" onclick='abrirModalEdicao(${JSON.stringify(doc)})'>Editar</button></td>
-      `;
-      tabelaCorpo.appendChild(tr);
-    });
-  }
-
-  function atualizarControlesPaginacao() {
-    spanPaginaAtual.textContent = (paginaAtual + 1);
-    btnAnterior.disabled = paginaAtual === 0;
-    btnProximo.disabled = paginaAtual >= totalPaginas - 1;
-  }
-
-  btnAnterior.addEventListener("click", () => {
-    if (paginaAtual > 0) {
-      paginaAtual--;
-      aplicarFiltros();
-    }
+  // === Carregar Subpastas ao trocar a pasta ===
+  pastaSelect.addEventListener("change", function () {
+    carregarSubpastas(this.value);
   });
 
-  btnProximo.addEventListener("click", () => {
-    if (paginaAtual < totalPaginas - 1) {
-      paginaAtual++;
-      aplicarFiltros();
+  function carregarSubpastas(pastaId) {
+    subpastaSelect.innerHTML = '<option value="">Carregando...</option>';
+    subpastaSelect.disabled = true;
+
+    if (!pastaId) {
+      subpastaSelect.innerHTML = '<option value="">Selecione uma subpasta</option>';
+      return;
     }
-  });
 
-  window.abrirPDF = function(id) {
-    window.open(`/api/documentos/abrir/${id}`, '_blank');
-  };
-
-  function formatarData(dataISO) {
-    const [ano, mes, dia] = dataISO.split("-");
-    return `${dia}/${mes}/${ano}`;
+    fetch(`/api/pastas/${encodeURIComponent(pastaId)}/subpastas`)
+      .then((r) => {
+        if (!r.ok) throw new Error("Falha ao buscar subpastas");
+        return r.json();
+      })
+      .then((subpastas) => {
+        if (!subpastas || subpastas.length === 0) {
+          subpastaSelect.innerHTML = '<option value="">Nenhuma subpasta encontrada</option>';
+          return;
+        }
+        subpastaSelect.innerHTML = '<option value="">Selecione uma subpasta</option>';
+        subpastas.forEach((sub) => {
+          const option = document.createElement("option");
+          option.value = sub.id;
+          option.textContent = `${sub.nome} ${sub.tipoAcesso === "INTERNO" ? "🔒" : "🔓"}`;
+          subpastaSelect.appendChild(option);
+        });
+        subpastaSelect.disabled = false;
+      })
+      .catch((err) => {
+        console.error("Erro ao carregar subpastas:", err);
+        subpastaSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+      });
   }
 
-  window.abrirModalEdicao = function (doc) {
-    let modal = document.getElementById("modalEdicao");
-
-    if (!modal) {
-      modal = document.createElement("div");
-      modal.id = "modalEdicao";
-      modal.classList.add("modal-overlay");
-      document.body.appendChild(modal);
-    }
-
-    modal.innerHTML = `
-      <div class="modal-content">
-        <h3>Editar Documento</h3>
-        <label for="novaDataExpiracao">Nova data de expiração:</label><br>
-        <input type="date" id="novaDataExpiracao"><br>
-        <button id="btnSalvarEdicao" class="editar">Salvar</button>
-        <button id="btnExcluirEdicao" class="excluir">Excluir</button><br><br>
-        <button class="fechar">Fechar</button>
-      </div>
-    `;
-
-    document.getElementById("novaDataExpiracao").value = doc.dataExpiracao;
-    modal.style.display = "flex";
-    setTimeout(() => modal.classList.add("mostrar"), 10);
-
-    modal.querySelector(".fechar").onclick = () => {
-      modal.classList.remove("mostrar");
-      setTimeout(() => modal.style.display = "none", 300);
-    };
-
-    document.getElementById("btnSalvarEdicao").onclick = async () => {
-      const novaData = document.getElementById("novaDataExpiracao").value;
-      if (!novaData) {
-        alert("Informe a nova data!");
-        return;
-      }
-
-      const headers = new Headers();
-      if (csrfHeader && csrfToken) headers.append(csrfHeader, csrfToken);
-
-      try {
-        const response = await fetch(`/api/documentos/${doc.id}/expiracao?data=${novaData}`, {
-          method: "PUT",
-          headers: headers
-        });
-
-        if (response.ok) {
-          modal.classList.remove("mostrar");
-          setTimeout(() => modal.style.display = "none", 300);
-          aplicarFiltros();
-        } else {
-          alert("Erro ao atualizar a data.");
-        }
-      } catch (err) {
-        alert("Erro ao atualizar a data.");
-      }
-    };
-
-    document.getElementById("btnExcluirEdicao").onclick = async () => {
-      if (!confirm("Deseja realmente excluir o documento?")) return;
-
-      const headers = new Headers();
-      if (csrfHeader && csrfToken) headers.append(csrfHeader, csrfToken);
-
-      try {
-        const response = await fetch(`/api/documentos/${doc.id}`, {
-          method: "DELETE",
-          headers: headers
-        });
-
-        if (response.ok) {
-          modal.classList.remove("mostrar");
-          setTimeout(() => modal.style.display = "none", 300);
-          aplicarFiltros();
-        } else {
-          alert("Erro ao excluir documento.");
-        }
-      } catch (err) {
-        alert("Erro ao excluir o documento.");
-      }
-    };
-  };
-
-  document.getElementById("arquivo").addEventListener("change", function () {
+  // === UX: mostrar nome do arquivo ===
+  inputArquivo.addEventListener("change", function () {
     const nome = this.files.length > 0 ? this.files[0].name : "Nenhum arquivo selecionado";
-    document.getElementById("arquivoSelecionado").textContent = nome;
+    spanArquivo.textContent = nome;
   });
 
-  barraPesquisa.addEventListener("input", () => {
-    paginaAtual = 0;
-    aplicarFiltros();
-  });
-
-  filtroStatus.addEventListener("change", () => {
-    paginaAtual = 0;
-    aplicarFiltros();
-  });
-
-  btnLimparFiltros.addEventListener("click", () => {
-    barraPesquisa.value = "";
-    filtroStatus.value = "";
-    paginaAtual = 0;
-    aplicarFiltros();
-  });
-
-  aplicarFiltros();
+  // Bootstrap inicial
+  carregarPastasDisponiveis();
 });

@@ -46,5 +46,15 @@ public class PageController {
         return "documentos";
     }
 
+    @GetMapping("/pastas")
+    public String paginaPastas() {
+        return "pastas"; 
+    }
+
+    @GetMapping("/documentosPorSubpasta")
+    public String paginaDocumentosPorSubpasta() {
+        return "documentosPorSubpasta";
+    }
+
 }
 
