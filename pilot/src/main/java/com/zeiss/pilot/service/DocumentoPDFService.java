@@ -254,6 +254,7 @@ public class DocumentoPDFService {
 
     public Page<DocumentoPDFDTO> listarPorSubpastaComFiltro(Long subpastaId, String status, String nome, int page, int size) {
         Pageable pageable   = PageRequest.of(page, size);
+
         String statusFiltro = (status == null || status.isBlank()) ? null : status.replace("-", " ");
         String nomeFiltro   = (nome   == null || nome.isBlank())   ? null : nome;
 
@@ -268,4 +269,5 @@ public class DocumentoPDFService {
             return toDTO(doc);
         });
     }
+    
 }

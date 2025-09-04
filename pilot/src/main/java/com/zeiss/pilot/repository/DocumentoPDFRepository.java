@@ -23,14 +23,14 @@ public interface DocumentoPDFRepository extends JpaRepository<DocumentoPDF, Long
         SELECT d.*
         FROM documento_pdf d
         WHERE d.subpasta_id = :subpastaId
-        AND (:status IS NULL OR LOWER(d.status) = LOWER(CAST(:status AS TEXT)))
+        AND (:status IS NULL OR LOWER(TRIM(d.status)) = LOWER(TRIM(CAST(:status AS TEXT))))
         AND (:nome   IS NULL OR d.nome_arquivo ILIKE ('%' || CAST(:nome AS TEXT) || '%'))
         """,
     countQuery = """
         SELECT COUNT(*)
         FROM documento_pdf d
         WHERE d.subpasta_id = :subpastaId
-        AND (:status IS NULL OR LOWER(d.status) = LOWER(CAST(:status AS TEXT)))
+        AND (:status IS NULL OR LOWER(TRIM(d.status)) = LOWER(TRIM(CAST(:status AS TEXT))))
         AND (:nome   IS NULL OR d.nome_arquivo ILIKE ('%' || CAST(:nome AS TEXT) || '%'))
         """,
     nativeQuery = true
@@ -41,6 +41,7 @@ public interface DocumentoPDFRepository extends JpaRepository<DocumentoPDF, Long
         @Param("nome") String nome,
         Pageable pageable
     );
+
 
     // (Opcional) útil para validações/listagens simples
     Page<DocumentoPDF> findBySubpasta_Id(Long subpastaId, Pageable pageable);

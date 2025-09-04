@@ -19,6 +19,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const tamanhoPag  = 8;
   let totalPaginas  = 1;
 
+  // === Modal refs
+  const modal             = document.getElementById("modalEdicao");
+  const inputNovaData     = document.getElementById("inputNovaData");
+  const btnSalvarEdicao   = document.getElementById("btnSalvarEdicao");
+  const btnExcluirDoc     = document.getElementById("btnExcluirDoc");
+  const btnCancelarEd     = document.getElementById("btnCancelarEd");
+
+  let docSelecionadoId = null;
+
   function carregarDocumentos() {
     if (!subpastaId) {
       console.error("ID da subpasta não encontrado na URL.");
@@ -84,16 +93,23 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${dataExp}</td>
         <td><span class="status ${classeStatus}">${escapeHtml(statusFmt)}</span></td>
         <td>
-          <button class="acao abrir" onclick="abrirPDF(${Number(doc.id)})">Abrir</button>
+          <button class="acao abrir"  data-id="${Number(doc.id)}">Abrir</button>
           ${
             isAdmin
-              ? `<button class="acao editar"  onclick="editarPDF(${Number(doc.id)})">Editar</button>
-                 <button class="acao excluir" onclick="excluirPDF(${Number(doc.id)})">Excluir</button>`
+              ? `<button class="acao editar" data-id="${Number(doc.id)}" data-data="${escapeAttr(doc.dataExpiracao || "")}">Editar</button>`
               : ""
           }
         </td>
       `;
       tabela.appendChild(tr);
+    });
+
+    // Delegação de eventos (melhor que inline)
+    tabela.querySelectorAll('button.acao.abrir').forEach(btn => {
+      btn.addEventListener('click', () => abrirPDF(btn.dataset.id));
+    });
+    tabela.querySelectorAll('button.acao.editar').forEach(btn => {
+      btn.addEventListener('click', () => abrirModalEdicao(btn.dataset.id, btn.dataset.data));
     });
   }
 
@@ -118,45 +134,88 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  window.mudarPagina = (pagina) => {
-    const alvo = Number(pagina);
-    if (Number.isFinite(alvo) && alvo >= 0 && alvo < totalPaginas) {
-      paginaAtual = alvo;
-      carregarDocumentos();
-    }
-  };
-
   // Ações
-  window.abrirPDF = (id) => {
-    // Mantendo a rota usada no restante do projeto
+  function abrirPDF(id) {
     window.open(`/api/documentos/abrir/${encodeURIComponent(id)}`, "_blank");
-  };
+  }
 
-  window.editarPDF = (id) => {
-    alert("Funcionalidade de edição será implementada aqui.");
-    // Ex.: abrir modal, PUT em /api/documentos/{id} com CSRF, etc.
-  };
+  // === Modal de Edição ===
+  function abrirModalEdicao(id, dataISO) {
+    docSelecionadoId = Number(id) || null;
+    inputNovaData.value = (dataISO || "").substring(0, 10); // yyyy-MM-dd
+    mostrarModal(true);
+  }
 
-  window.excluirPDF = (id) => {
-    if (!confirm("Tem certeza que deseja excluir este documento?")) return;
+  function fecharModal() {
+    mostrarModal(false);
+    docSelecionadoId = null;
+    inputNovaData.value = "";
+  }
+
+  function mostrarModal(flag) {
+    if (!modal) return;
+    if (flag) {
+      modal.style.display = "flex";
+      setTimeout(() => modal.classList.add("mostrar"), 10);
+    } else {
+      modal.classList.remove("mostrar");
+      setTimeout(() => modal.style.display = "none", 200);
+    }
+  }
+
+  // Salvar (PUT expiração)
+  btnSalvarEdicao?.addEventListener("click", async () => {
+    if (!docSelecionadoId) return;
+    const novaData = inputNovaData.value;
+    if (!novaData) { alert("Informe a nova data de expiração."); return; }
 
     const headers = new Headers();
     if (csrfHeader && csrfToken) headers.append(csrfHeader, csrfToken);
 
-    fetch(`/api/documentos/${encodeURIComponent(id)}`, {
-      method: "DELETE",
-      headers
-    })
-      .then(res => {
-        if (res.ok) {
-          alert("Documento excluído com sucesso.");
-          carregarDocumentos();
-        } else {
-          alert("Erro ao excluir documento.");
-        }
-      })
-      .catch(err => console.error("Erro na exclusão:", err));
-  };
+    try {
+      const res = await fetch(`/api/documentos/${encodeURIComponent(docSelecionadoId)}/expiracao?data=${encodeURIComponent(novaData)}`, {
+        method: "PUT",
+        headers
+      });
+      if (!res.ok) throw new Error("Falha ao atualizar data");
+      fecharModal();
+      carregarDocumentos();
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao atualizar a data.");
+    }
+  });
+
+  // Excluir (DELETE)
+  btnExcluirDoc?.addEventListener("click", async () => {
+    if (!docSelecionadoId) return;
+    if (!confirm("Deseja realmente excluir este documento?")) return;
+
+    const headers = new Headers();
+    if (csrfHeader && csrfToken) headers.append(csrfHeader, csrfToken);
+
+    try {
+      const res = await fetch(`/api/documentos/${encodeURIComponent(docSelecionadoId)}`, {
+        method: "DELETE",
+        headers
+      });
+      if (!res.ok) throw new Error("Falha ao excluir");
+      fecharModal();
+      carregarDocumentos();
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao excluir documento.");
+    }
+  });
+
+  // Cancelar/fechar
+  btnCancelarEd?.addEventListener("click", fecharModal);
+  modal?.addEventListener("click", (e) => {
+    if (e.target === modal) fecharModal(); // clique fora
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal?.style.display === "flex") fecharModal();
+  });
 
   // Filtros
   window.limparFiltros = () => {
@@ -176,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarDocumentos();
   });
 
-  // Utilitário simples para evitar XSS em campos de texto
+  // Utilitários
   function escapeHtml(str) {
     return String(str)
       .replace(/&/g, "&amp;")
@@ -184,6 +243,9 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+  function escapeAttr(str) {
+    return String(str).replace(/"/g, "&quot;").replace(/'/g, "&#039;");
   }
 
   // Bootstrap

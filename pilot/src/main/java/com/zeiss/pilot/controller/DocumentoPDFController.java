@@ -122,6 +122,6 @@ public class DocumentoPDFController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size
     ) {
-        return service.listarPorSubpastaComFiltro(idSubpasta, nome, status, page, size);
+        return service.listarPorSubpastaComFiltro(idSubpasta, status, nome, page, size);
     }
 }
